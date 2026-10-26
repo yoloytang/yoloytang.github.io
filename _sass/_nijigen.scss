@@ -619,9 +619,7 @@ html:not(.niji-theme-vt)::view-transition-new(root) {
 .about-jp .about-identity .about-hello,
 .about-jp .about-identity .about-hello .about-hello-rotator,
 .about-jp.is-creative-mode .about-identity .about-hello,
-.about-jp.is-creative-mode .about-identity .about-hello .about-hello-rotator,
-.about-jp.is-meow-mode .about-identity .about-hello,
-.about-jp.is-meow-mode .about-identity .about-hello .about-hello-rotator {
+.about-jp.is-creative-mode .about-identity .about-hello .about-hello-rotator {
   font-family: "Hiragino Mincho ProN", "Yu Mincho", Georgia, serif !important;
   font-size: 0.94rem !important;
   font-weight: 400 !important;

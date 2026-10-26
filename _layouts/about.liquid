@@ -6,7 +6,6 @@ layout: default
     {% if site.icon %}
       {% assign title_icon_path = site.icon | prepend: 'assets/img/' | relative_url %}
       {% assign academic_icon_path = 'assets/img/logo/icon_academic.jpg' | relative_url %}
-      {% assign meow_icon_path = 'assets/img/logo/icon_meow.png' | relative_url %}
     {% endif %}
     <div class="about-identity">
       {% if site.icon %}
@@ -16,7 +15,6 @@ layout: default
             src="{{ title_icon_path }}"
             data-default-icon="{{ title_icon_path }}"
             data-academic-icon="{{ academic_icon_path }}"
-            data-meow-icon="{{ meow_icon_path }}"
             alt=""
             aria-hidden="true"
             draggable="false"
@@ -75,12 +73,10 @@ layout: default
     var aboutRoot = document.querySelector('.about-jp');
     var modelPicker = document.querySelector('.about-model-select');
     var contactAction = document.querySelector('[data-about-contact-action]');
-    var contactIcon = contactAction ? contactAction.querySelector('i') : null;
     var scholarAction = document.querySelector('[data-about-scholar-action]');
     var scholarIcon = scholarAction ? scholarAction.querySelector('i') : null;
     var xAction = document.querySelector('[data-about-x-action]');
     var githubAction = document.querySelector('[data-about-github-action]');
-    var githubIcon = githubAction ? githubAction.querySelector('i') : null;
     var panelTriggers = Array.prototype.slice.call(document.querySelectorAll('[data-about-panel-trigger]'));
     var inlinePanels = Array.prototype.slice.call(document.querySelectorAll('[data-about-panel]'));
     var collapseInlinePanels = null;
@@ -106,7 +102,7 @@ layout: default
       Creative: {
         greetings: [
           '🤗 Hi there/你好/こんにちは/안녕/Ciallo ～(∠・ω< )⌒★',
-          '🍭 This is Yolo Y. Tang (悠洛 in Mandarin or <ruby>夜<rt>よる</rt></ruby> in Japanese).',
+          '🍭 This is Yolo Y. Tang (悠洛, Yōuluò in Mandarin / Yura in Japanese).',
           "🏠 Welcome to Yolo's personal website and have fun exploring!",
         ],
         interactions: [
@@ -115,22 +111,6 @@ layout: default
           '✨ Feel free to explore the research and projects.',
           '📚 New ideas are usually hiding one click away.',
           '🩵 Hope you enjoy the visit.',
-          "🪪 Please don't deadname or misgender Yolo. She prefers Yolo (in English) or 悠洛 (in Mandarin).",
-          '🌙 Yolo also prefers <ruby>夜<rt>よる</rt></ruby> ("night" in Japanese), since Sonta pronounces Yolo like /ˈjoʊ lu/, close to よる.',
-        ],
-      },
-      Meow: {
-        greetings: [
-          '🐾 Meow there / 你好 / こんにちは / 안녕 / Ciallo ～(∠・ω< )⌒★',
-          '🐱 Yolo is currently accepting papers, ideas, treats, and gentle head pats.',
-          '🐈 Paw around the site. If anything breaks, the cat was not here.',
-        ],
-        interactions: [
-          '🐾 Mrrp. Yolo likes head pats and cozy snuggles.',
-          '🐱 You clicked the cat. The cat approves this research direction.',
-          '🍣 Purr review complete: promising, but needs more snacks.',
-          '🐈 Tiny paw detected. Opening curiosity mode.',
-          '😼 Meow mode is scientifically unserious. Please cite the cat responsibly.',
         ],
       },
     };
@@ -141,17 +121,14 @@ layout: default
       if (hour >= 23 || hour < 5) {
         timeGreetings = {
           Creative: '🌙 Welcome, fellow night owl.',
-          Meow: '🐾 Meow?! It is nap time... but head pats are still accepted.',
         };
       } else if (hour < 11) {
         timeGreetings = {
           Creative: '🌅 Good morning! A brand-new day for brand-new ideas.',
-          Meow: '🐱 Mrrp... early meow. Breakfast first, research second.',
         };
       } else if (hour >= 18) {
         timeGreetings = {
           Creative: '🌆 Good evening! The site glows a little softer at night.',
-          Meow: '😼 Evening patrol complete. The couch is secured.',
         };
       }
       if (!timeGreetings) return;
@@ -181,7 +158,6 @@ layout: default
     // typing several characters per tick rather than from a shorter delay.
     var typingCharsPerTick = 3;
     var autoCycleIntervalMs = 15000;
-    var autoCycleMeowIntervalMs = 7000;
     var autoCycleInitialDelayMs = 10000;
     var autoSpeechDurationMs = 5000;
     var autoCycleTimerId = null;
@@ -199,7 +175,7 @@ layout: default
     }
 
     function currentAutoCycleIntervalMs() {
-      return currentSpeechMode === 'Meow' ? autoCycleMeowIntervalMs : autoCycleIntervalMs;
+      return autoCycleIntervalMs;
     }
 
     function restartAutoCycleInterval() {
@@ -212,9 +188,6 @@ layout: default
       if (!speechModes[mode]) return;
       var modeChanged = mode !== currentSpeechMode;
       dismissSpeechBubble();
-      if (mode === 'Meow' && typeof collapseInlinePanels === 'function') {
-        collapseInlinePanels();
-      }
       // In search mode the card shows the search field; the new bio types in on leaving it.
       var retypePrompt = modeChanged && !isPromptSearching();
       var promptGhosts = retypePrompt ? capturePromptText() : [];
@@ -225,35 +198,10 @@ layout: default
       interactionIndex = 0;
       autoCycleIndex = 0;
       if (avatarImage) {
-        if (mode === 'Academic') {
-          avatarImage.src = avatarImage.dataset.academicIcon;
-        } else if (mode === 'Meow') {
-          avatarImage.src = avatarImage.dataset.meowIcon;
-        } else {
-          avatarImage.src = avatarImage.dataset.defaultIcon;
-        }
-      }
-      if (contactAction && contactIcon) {
-        // Meow mode swaps the email for Telegram (Creative mode's Discord is a separate button).
-        var useTelegram = mode === 'Meow' && contactAction.dataset.telegramHref;
-        var href = useTelegram ? contactAction.dataset.telegramHref : contactAction.dataset.emailHref;
-        var label = useTelegram ? contactAction.dataset.telegramLabel : contactAction.dataset.emailLabel;
-        var icon = useTelegram ? contactAction.dataset.telegramIcon : contactAction.dataset.emailIcon;
-        contactAction.href = href;
-        contactAction.title = label;
-        contactAction.dataset.contactMode = useTelegram ? 'telegram' : 'email';
-        contactAction.setAttribute('aria-label', label);
-        contactIcon.className = icon;
-        if (useTelegram) {
-          contactAction.target = '_blank';
-          contactAction.rel = 'noopener noreferrer';
-        } else {
-          contactAction.removeAttribute('target');
-          contactAction.removeAttribute('rel');
-        }
+        avatarImage.src = mode === 'Academic' ? avatarImage.dataset.academicIcon : avatarImage.dataset.defaultIcon;
       }
       if (scholarAction && scholarIcon) {
-        var useInstagram = mode === 'Creative' || mode === 'Meow';
+        var useInstagram = mode === 'Creative';
         var scholarHref = useInstagram ? scholarAction.dataset.instagramHref : scholarAction.dataset.scholarHref;
         var scholarLabel = useInstagram ? scholarAction.dataset.instagramLabel : scholarAction.dataset.scholarLabel;
         var scholarIconClass = useInstagram ? scholarAction.dataset.instagramIcon : scholarAction.dataset.scholarIcon;
@@ -263,37 +211,24 @@ layout: default
         scholarIcon.className = scholarIconClass;
       }
       if (xAction) {
-        var useArtX = mode === 'Creative' || mode === 'Meow';
+        var useArtX = mode === 'Creative';
         xAction.href = useArtX ? xAction.dataset.xCreativeHref : xAction.dataset.xHref;
       }
-      if (githubAction && githubIcon) {
+      if (githubAction) {
         var usePixiv = mode === 'Creative';
-        var useGlobe = mode === 'Meow';
-        githubAction.href = useGlobe
-          ? githubAction.dataset.visitorsHref
-          : usePixiv
-            ? githubAction.dataset.pixivHref
-            : githubAction.dataset.githubHref;
-        var ghLabel = useGlobe
-          ? githubAction.dataset.visitorsLabel
-          : usePixiv
-            ? githubAction.dataset.pixivLabel
-            : githubAction.dataset.githubLabel;
+        githubAction.href = usePixiv ? githubAction.dataset.pixivHref : githubAction.dataset.githubHref;
+        var ghLabel = usePixiv ? githubAction.dataset.pixivLabel : githubAction.dataset.githubLabel;
         githubAction.title = ghLabel;
         githubAction.setAttribute('aria-label', ghLabel);
         githubAction.classList.toggle('is-pixiv', usePixiv);
-        githubAction.classList.toggle('is-globe', useGlobe);
       }
       if (modelPicker) {
         modelPicker.classList.toggle('is-creative-mode', mode === 'Creative');
-        modelPicker.classList.toggle('is-meow-mode', mode === 'Meow');
       }
       if (aboutRoot) {
         aboutRoot.classList.toggle('is-creative-mode', mode === 'Creative');
-        aboutRoot.classList.toggle('is-meow-mode', mode === 'Meow');
       }
       document.body.classList.toggle('is-about-creative-mode', mode === 'Creative');
-      document.body.classList.toggle('is-about-meow-mode', mode === 'Meow');
       restartAutoCycleInterval();
       fitQuickLinks();
       if (retypePrompt) typePromptText(promptGhosts);
@@ -406,7 +341,6 @@ layout: default
     function fitQuickLinks() {
       if (!quickLinks) return;
       if (!quickLinks.offsetParent) {
-        // No quick links in this mode (Meow): just the icons, picker and search button.
         setActionsCollapsed(false);
         setActionsCollapsed(actionRowOverflows());
         return;
@@ -504,16 +438,6 @@ layout: default
         });
       }
     }
-
-    // Whole days since the start date in the visitor's local calendar. Meow mode needs JS
-    // anyway, so there's no build-time fallback.
-    document.querySelectorAll('[data-cat-since]').forEach(function (el) {
-      var parts = el.getAttribute('data-cat-since').split('-');
-      var start = new Date(+parts[0], parts[1] - 1, +parts[2]);
-      var today = new Date();
-      today.setHours(0, 0, 0, 0);
-      el.textContent = Math.round((today - start) / 86400000);
-    });
 
     var promptTyping = null;
 

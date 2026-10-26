@@ -213,7 +213,6 @@ ul.task-list input[type="checkbox"] {
   font-family: "Hiragino Mincho ProN", "Yu Mincho", Georgia, serif;
   margin-top: -0.75rem;
   --about-creative-font: "Hiragino Mincho ProN", "Yu Mincho", Georgia, serif;
-  --about-meow-font: "Chalkboard SE", "Comic Sans MS", "Marker Felt", Palatino, serif;
   --about-card-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --about-text-max-width: 960px;
   --about-kasumi-line: linear-gradient(
@@ -226,7 +225,6 @@ ul.task-list input[type="checkbox"] {
   );
 
   .about-bio-creative,
-  .about-bio-meow,
   .about-bio-panel {
     display: none;
   }
@@ -234,8 +232,7 @@ ul.task-list input[type="checkbox"] {
   // about.liquid sets these on the card while a panel is open; that panel's hint replaces the bio.
   .about-prompt.has-panel-hint {
     .about-bio-academic,
-    .about-bio-creative,
-    .about-bio-meow {
+    .about-bio-creative {
       display: none;
     }
   }
@@ -252,10 +249,6 @@ ul.task-list input[type="checkbox"] {
     display: block !important;
   }
 
-  .about-cat-days {
-    color: var(--global-theme-color);
-  }
-
   &.is-creative-mode {
     .about-prompt p {
       font-family: var(--about-creative-font);
@@ -266,20 +259,6 @@ ul.task-list input[type="checkbox"] {
     }
 
     .about-bio-creative {
-      display: block;
-    }
-  }
-
-  &.is-meow-mode {
-    .about-prompt p {
-      font-family: var(--about-meow-font);
-    }
-
-    .about-bio-academic {
-      display: none;
-    }
-
-    .about-bio-meow {
       display: block;
     }
   }
@@ -695,15 +674,6 @@ ul.task-list input[type="checkbox"] {
     display: inline-flex;
   }
 
-  // Meow mode keeps only the globe (visitor map), Telegram and the mode picker.
-  &.is-meow-mode {
-    .about-prompt-x,
-    [data-about-scholar-action],
-    .about-quick-links {
-      display: none !important;
-    }
-  }
-
   .about-model-select {
     position: relative;
     display: inline-flex;
@@ -837,14 +807,6 @@ ul.task-list input[type="checkbox"] {
         }
       }
 
-      &[data-about-model-value="Meow"] {
-        &,
-        .about-model-variant,
-        .about-model-brand {
-          font-family: var(--about-meow-font);
-        }
-      }
-
       &::after {
         content: "";
         position: absolute;
@@ -882,19 +844,6 @@ ul.task-list input[type="checkbox"] {
       .about-model-variant,
       .about-model-brand {
         transform: translateY(0.07em);
-      }
-    }
-
-    &.is-meow-mode {
-      font-family: var(--about-meow-font);
-
-      summary {
-        font-size: 1rem;
-      }
-
-      .about-model-variant,
-      .about-model-brand {
-        transform: translateY(-0.1em);
       }
     }
   }
@@ -962,33 +911,6 @@ ul.task-list input[type="checkbox"] {
 
     &.is-pixiv .about-prompt-pixiv-logo {
       display: block;
-    }
-
-    // Flat Font Awesome globe, centred in its box so it spins about the button's centre. Its disc
-    // is 512 units wide to Telegram's 496, so 1.2em × 496/512 draws the two at the same size.
-    .about-prompt-globe {
-      display: none;
-      font-size: 1.1625em;
-      line-height: 1;
-      animation: about-globe-spin 6s linear infinite;
-
-      @media (prefers-reduced-motion: reduce) {
-        animation: none;
-      }
-    }
-
-    &.is-globe .fa-github {
-      display: none !important;
-    }
-
-    &.is-globe .about-prompt-globe {
-      display: block;
-    }
-  }
-
-  @keyframes about-globe-spin {
-    to {
-      transform: rotate(360deg);
     }
   }
 
@@ -1154,17 +1076,6 @@ ul.task-list input[type="checkbox"] {
     i {
       font-size: 1.08em;
       transform: translateY(-0.0657em);
-    }
-
-    // Telegram (Meow mode) sits centred in its button, level with the globe, at the globe's width.
-    // The Brands font's rounded metrics draw the glyph high on its line, hence the nudge down.
-    &[data-contact-mode="telegram"] {
-      transform: none;
-    }
-
-    .fa-telegram {
-      font-size: 1.2em;
-      transform: translateY(0.035em);
     }
   }
 
@@ -2931,16 +2842,8 @@ header {
   white-space: nowrap;
 }
 
-body.is-about-creative-mode,
-body.is-about-meow-mode {
+body.is-about-creative-mode {
   --about-creative-font: "Hiragino Mincho ProN", "Yu Mincho", Georgia, serif;
-  --about-meow-font: "Chalkboard SE", "Comic Sans MS", "Marker Felt", Palatino, serif;
-}
-
-body.is-about-meow-mode {
-  .about-quick-links {
-    display: none;
-  }
 }
 
 body.is-about-creative-mode {
@@ -2957,7 +2860,7 @@ body.is-about-creative-mode {
   }
 }
 
-body:not(.is-about-creative-mode):not(.is-about-meow-mode) {
+body:not(.is-about-creative-mode) {
   .about-quick-links a[data-about-panel-trigger="gallery"] {
     order: 1;
   }
@@ -3330,8 +3233,8 @@ html.has-profile-drawer {
   }
 }
 
-// Instagram, Discord and Telegram in their brand colours, like the Pixiv logo beside them
-// (homepage card, profile drawer, gallery posts). The Meow-mode globe shares Telegram's blue.
+// Instagram and Discord in their brand colours, like the Pixiv logo beside them
+// (homepage card, profile drawer, gallery posts).
 .about-prompt-action .fa-instagram,
 .profile-drawer-links .fa-instagram,
 .ig-icon .fa-instagram {
@@ -3344,12 +3247,6 @@ html.has-profile-drawer {
 .about-prompt-discord .fa-discord,
 .profile-drawer-links .fa-discord {
   color: #5865f2;
-}
-
-.about-prompt-email .fa-telegram,
-.about-prompt-github .about-prompt-globe,
-.profile-drawer-links .fa-telegram {
-  color: #26a5e4;
 }
 
 // The visitor map and the copyright (the site has no footer) sit at the bottom of the drawer.
