@@ -35,7 +35,7 @@ Yolo Y. Tang is a final-year Ph.D. candidate at the [University of Rochester](ht
 Yolo is drawing for fun, self-teaching and not open to paid commissions or commercial collaborations. She is also really into J-pop and cosplay — maybe she’s just cosplaying as a researcher :)
 {: .about-bio-creative}
 
-Yolo has been a cat for <span class="about-cat-days" data-cat-since="2025-08-28"></span> days. Please don't deadname or misgender her. She prefers Yolo (in English) or 悠璐 (in Mandarin). She also prefers <ruby>夜<rt>よる</rt></ruby> ("night" in Japanese), since Sonta pronounces Yolo like /ˈjoʊ lu/, close to よる.
+Yolo has been a cat for <span class="about-cat-days" data-cat-since="2025-08-28"></span> days. Please don't deadname or misgender her. She prefers Yolo (in English) or 悠洛 (in Mandarin). She also prefers <ruby>夜<rt>よる</rt></ruby> ("night" in Japanese), since Sonta pronounces Yolo like /ˈjoʊ lu/, close to よる.
 {: .about-bio-meow}
 
 Swipe left or right to explore the full map and click a node to show related papers.
