@@ -99,9 +99,9 @@
       {% if site.enable_darkmode %}
         <!-- Toggle theme mode -->
         <div class="toggle-container navbar-theme-toggle">
-          <button id="light-toggle" title="Change theme">
-            <i class="ti ti-sun" id="light-toggle-light"></i>
-            <i class="ti ti-moon" id="light-toggle-dark"></i>
+          <button id="light-toggle" class="light-toggle" title="Change theme">
+            <i class="ti ti-sun light-toggle-sun" id="light-toggle-light"></i>
+            <i class="ti ti-moon light-toggle-moon" id="light-toggle-dark"></i>
           </button>
         </div>
       {% endif %}
@@ -118,7 +118,15 @@
           alt=""
         >
       </button>
-      <div class="profile-drawer-name"><span>Yolo</span> Tang</div>
+      <div class="profile-drawer-title">
+        <div class="profile-drawer-name"><span>Yolo</span> Tang</div>
+        {% if site.enable_darkmode %}
+          <button type="button" class="profile-drawer-theme light-toggle" title="Change theme" aria-label="Change theme">
+            <i class="ti ti-sun light-toggle-sun" aria-hidden="true"></i>
+            <i class="ti ti-moon light-toggle-moon" aria-hidden="true"></i>
+          </button>
+        {% endif %}
+      </div>
       <button type="button" class="profile-drawer-close" aria-label="Close">
         <i class="fa-solid fa-xmark" aria-hidden="true"></i>
       </button>

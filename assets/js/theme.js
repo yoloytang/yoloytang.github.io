@@ -247,41 +247,40 @@ let initTheme = () => {
   document.documentElement.setAttribute("data-theme-setting", determineThemeSetting());
   applyTheme();
 
-  // Add event listener to the theme toggle button.
+  // Navbar and profile drawer each have a theme toggle.
   document.addEventListener("DOMContentLoaded", function () {
-    const mode_toggle = document.getElementById("light-toggle");
-    if (!mode_toggle) return;
-
-    mode_toggle.addEventListener("click", function () {
-      // NEW K5: circular reveal via the View Transitions API (falls back to the
-      // plain toggle on unsupported browsers or reduced-motion preference).
-      const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (!document.startViewTransition || reduceMotion) {
-        toggleThemeSetting();
-        return;
-      }
-      const rect = mode_toggle.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-      const endRadius = Math.hypot(Math.max(cx, window.innerWidth - cx), Math.max(cy, window.innerHeight - cy));
-      // NEW N2: small star burst at the toggle (handled by nijigen_sparkle.js).
-      document.dispatchEvent(new CustomEvent("niji:burst", { detail: { x: cx, y: cy } }));
-      // Mark theme-toggle transitions so CSS can distinguish them from
-      // cross-document (page navigation) view transitions.
-      document.documentElement.classList.add("niji-theme-vt");
-      const transition = document.startViewTransition(() => {
-        toggleThemeSetting();
-      });
-      transition.finished.finally(() => {
-        document.documentElement.classList.remove("niji-theme-vt");
-      });
-      transition.ready.then(() => {
-        document.documentElement.animate(
-          {
-            clipPath: ["circle(0px at " + cx + "px " + cy + "px)", "circle(" + endRadius + "px at " + cx + "px " + cy + "px)"],
-          },
-          { duration: 480, easing: "ease-in-out", pseudoElement: "::view-transition-new(root)" }
-        );
+    document.querySelectorAll(".light-toggle").forEach(function (mode_toggle) {
+      mode_toggle.addEventListener("click", function () {
+        // NEW K5: circular reveal via the View Transitions API (falls back to the
+        // plain toggle on unsupported browsers or reduced-motion preference).
+        const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (!document.startViewTransition || reduceMotion) {
+          toggleThemeSetting();
+          return;
+        }
+        const rect = mode_toggle.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const endRadius = Math.hypot(Math.max(cx, window.innerWidth - cx), Math.max(cy, window.innerHeight - cy));
+        // NEW N2: small star burst at the toggle (handled by nijigen_sparkle.js).
+        document.dispatchEvent(new CustomEvent("niji:burst", { detail: { x: cx, y: cy } }));
+        // Mark theme-toggle transitions so CSS can distinguish them from
+        // cross-document (page navigation) view transitions.
+        document.documentElement.classList.add("niji-theme-vt");
+        const transition = document.startViewTransition(() => {
+          toggleThemeSetting();
+        });
+        transition.finished.finally(() => {
+          document.documentElement.classList.remove("niji-theme-vt");
+        });
+        transition.ready.then(() => {
+          document.documentElement.animate(
+            {
+              clipPath: ["circle(0px at " + cx + "px " + cy + "px)", "circle(" + endRadius + "px at " + cx + "px " + cy + "px)"],
+            },
+            { duration: 480, easing: "ease-in-out", pseudoElement: "::view-transition-new(root)" }
+          );
+        });
       });
     });
   });

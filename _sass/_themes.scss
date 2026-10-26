@@ -130,35 +130,35 @@ html[data-theme-setting="dark"] {
 // Theme toggle icon follows the computed appearance, inverted:
 // night (dark) shows the sun, day (light) shows the moon.
 // Before data-theme is set, follow the system preference.
-#light-toggle-light,
-#light-toggle-dark {
+.light-toggle-sun,
+.light-toggle-moon {
   display: none;
 }
 
 @media (prefers-color-scheme: dark) {
-  #light-toggle-light {
+  .light-toggle-sun {
     display: block;
   }
 }
 
 @media (prefers-color-scheme: light) {
-  #light-toggle-dark {
+  .light-toggle-moon {
     display: block;
   }
 }
 
-html[data-theme="dark"] #light-toggle-light {
+html[data-theme="dark"] .light-toggle-sun {
   display: block;
 }
 
-html[data-theme="dark"] #light-toggle-dark {
+html[data-theme="dark"] .light-toggle-moon {
   display: none;
 }
 
-html[data-theme="light"] #light-toggle-dark {
+html[data-theme="light"] .light-toggle-moon {
   display: block;
 }
 
-html[data-theme="light"] #light-toggle-light {
+html[data-theme="light"] .light-toggle-sun {
   display: none;
 }

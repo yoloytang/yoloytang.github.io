@@ -857,6 +857,7 @@ html[data-theme="dark"] .publications ol.bibliography li .abbr abbr:not([style])
 // 日间粉为主 → 悬停粉；夜间蓝为主 → 悬停蓝（夜间走全局 hover 色已是蓝，无需另写）。
 
 html:not([data-theme="dark"]) #light-toggle:hover,
+html:not([data-theme="dark"]) .profile-drawer-theme:hover,
 html:not([data-theme="dark"]) #search-toggle:hover {
   color: var(--global-theme-color);
 }
