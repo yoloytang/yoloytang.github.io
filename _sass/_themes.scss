@@ -127,41 +127,38 @@ html[data-theme-setting="dark"] {
   }
 }
 
-// Theme toggle icon: show the icon that matches the current setting
-// (system / light / dark). Default (no attribute yet) falls back to system.
-#light-toggle-system,
+// Theme toggle icon follows the computed appearance, inverted:
+// night (dark) shows the sun, day (light) shows the moon.
+// Before data-theme is set, follow the system preference.
 #light-toggle-light,
 #light-toggle-dark {
   display: none;
 }
 
-#light-toggle-system {
+@media (prefers-color-scheme: dark) {
+  #light-toggle-light {
+    display: block;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  #light-toggle-dark {
+    display: block;
+  }
+}
+
+html[data-theme="dark"] #light-toggle-light {
   display: block;
 }
 
-html[data-theme-setting="system"] #light-toggle-system {
-  display: block;
-}
-
-html[data-theme-setting="system"] #light-toggle-light,
-html[data-theme-setting="system"] #light-toggle-dark {
+html[data-theme="dark"] #light-toggle-dark {
   display: none;
 }
 
-html[data-theme-setting="light"] #light-toggle-light {
+html[data-theme="light"] #light-toggle-dark {
   display: block;
 }
 
-html[data-theme-setting="light"] #light-toggle-system,
-html[data-theme-setting="light"] #light-toggle-dark {
-  display: none;
-}
-
-html[data-theme-setting="dark"] #light-toggle-dark {
-  display: block;
-}
-
-html[data-theme-setting="dark"] #light-toggle-system,
-html[data-theme-setting="dark"] #light-toggle-light {
+html[data-theme="light"] #light-toggle-light {
   display: none;
 }
