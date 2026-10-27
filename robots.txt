@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://yunlong10.github.io/sitemap.xml
+Sitemap: https://yoloytang.me/sitemap.xml
