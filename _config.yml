@@ -14,7 +14,7 @@ keywords: jekyll, jekyll-theme, academic-website, portfolio-website # add your o
 lang: en # the language of your site (for example: en, fr, cn, ru, etc.)
 icon: logo/icon.png # the emoji used as the favicon (alternatively, provide image name in /assets/img/)
 
-url: https://yunlong10.github.io # the base hostname & protocol for your site
+url: https://yoloytang.me # the base hostname & protocol for your site
 baseurl: # the subpath of your site, e.g. /blog/. Leave blank for root
 last_updated: false # set to true if you want to display last updated in the footer
 impressum_path: # set to path to include impressum link in the footer, use the same path as permalink in a page, helps to conform with EU GDPR
@@ -74,7 +74,7 @@ dblp_url: # your DBLP profile url
 discord_id: 1152784980167106662 # discord.com/users/<id>
 facebook_id: # your facebook id
 flickr_id: # your flickr id
-github_username: yunlong10 # your GitHub user name
+github_username: yoloytang # your GitHub user name
 gitlab_username: # your GitLab user name
 ieee_id: # your ieeexplore.ieee.org/author/id
 instagram_id: yoloytang.art # your instagram id
@@ -630,7 +630,7 @@ jekyll_get_json:
     json: assets/json/resume.json # it can also be an url
   # Selected publications: build-time sort + cite counts (offline build skips if fetch fails)
   - data: pub_citations
-    json: https://raw.githubusercontent.com/yunlong10/citation-badge/main/per_article_citations.json
+    json: https://raw.githubusercontent.com/yoloytang/citation-badge/main/per_article_citations.json
 jsonresume:
   - basics
   - work
