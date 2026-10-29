@@ -2290,10 +2290,10 @@ ul.task-list input[type="checkbox"] {
     // Otherwise overflow-y computes to auto too, and the track holds on to the mouse wheel
     // instead of letting the page scroll.
     overflow-y: hidden;
+    overflow-anchor: none;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    -webkit-overflow-scrolling: touch;
 
     &::-webkit-scrollbar {
       display: none;
@@ -2302,10 +2302,21 @@ ul.task-list input[type="checkbox"] {
 
   .ig-slide {
     flex: 0 0 100%;
-    scroll-snap-align: center;
+    width: 100%;
+    // Every slide is exactly one track wide: the carousel script reads the slide off
+    // scrollLeft / width, and min-width:auto would let a wide image stretch its slide.
+    min-width: 0;
+    max-width: 100%;
+    scroll-snap-align: start;
     display: flex;
     align-items: center;
     justify-content: center;
+
+    picture {
+      display: block;
+      width: 100%;
+      min-width: 0;
+    }
   }
 
   .ig-post-media {
@@ -2314,6 +2325,8 @@ ul.task-list input[type="checkbox"] {
     img {
       display: block;
       width: 100%;
+      min-width: 0;
+      max-width: 100%;
       height: auto;
       max-height: 585px;
       object-fit: cover;
