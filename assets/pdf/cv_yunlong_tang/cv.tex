@@ -44,6 +44,7 @@
 % Use \iffieldequalstr{entrykey}{...} (works inside \defbibcheck); \ifstrequal can be undefined in some setups.
 \defbibcheck{cvonly}{%
   \ifboolexpr{
+    test {\iffieldequalstr{entrykey}{tang2026bvb}} or
     test {\iffieldequalstr{entrykey}{tang2025videor4}} or
     test {\iffieldequalstr{entrykey}{tang2026takusen}} or
     test {\iffieldequalstr{entrykey}{tang2025catv}} or
