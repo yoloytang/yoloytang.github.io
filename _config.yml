@@ -48,6 +48,7 @@ footer_fixed: true
 search_enabled: true
 socials_in_search: true
 bib_search: true
+gallery_tag_order: [yuri, original, solo, group] # order of the Gallery tag filters; tags not listed here follow alphabetically
 
 # Dimensions
 max_width: 930px
@@ -72,6 +73,7 @@ blogger_url: # your blogger URL
 bluesky_url: # your bluesky URL
 dblp_url: # your DBLP profile url
 discord_id: 1152784980167106662 # discord.com/users/<id>
+discord_invite: bbKG5nn28r # discord.gg/<invite>, used for the Discord links shown on the site
 facebook_id: # your facebook id
 flickr_id: # your flickr id
 github_username: yoloytang # your GitHub user name

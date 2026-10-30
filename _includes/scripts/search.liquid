@@ -504,13 +504,13 @@
             },
           },
         {%- endif -%}
-        {%- if site.discord_id -%}
+        {%- if site.discord_invite -%}
           {
             id: 'socials-discord',
             title: 'Discord',
             section: 'Socials',
             handler: () => {
-              window.open("https://discord.com/users/{{ site.discord_id }}", "_blank");
+              window.open("https://discord.gg/{{ site.discord_invite }}", "_blank");
             },
           },
         {%- endif -%}

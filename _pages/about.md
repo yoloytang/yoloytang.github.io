@@ -38,7 +38,7 @@ Yolo is drawing for fun (self-teaching and not open to commissions or commercial
 Swipe left or right to explore the full map and click a node to show related papers.
 {: .about-bio-panel .about-bio-research}
 
-Select a tag to filter: <span class="about-gallery-filters" role="group" aria-label="Filter by tag">{%- assign gallery_tags = '' | split: '' -%}{%- for painting in site.data.paintings -%}{%- if painting.tags -%}{%- assign gallery_tags = gallery_tags | concat: painting.tags -%}{%- endif -%}{%- endfor -%}{%- assign gallery_tags = gallery_tags | uniq | sort -%}<button type="button" class="ig-filter" data-ig-filter="*" aria-selected="false">#All</button>{%- for tag in gallery_tags -%}{%- assign tag_key = tag | downcase %} <button type="button" class="ig-filter{% if tag_key == 'illustration' %} is-active{% endif %}" data-ig-filter="{{ tag_key }}" aria-selected="{% if tag_key == 'illustration' %}true{% else %}false{% endif %}">#{{ tag }}</button>{%- endfor -%}</span>
+Select a tag to filter: <span class="about-gallery-filters" role="group" aria-label="Filter by tag">{%- assign gallery_tags = '' | split: '' -%}{%- for painting in site.data.paintings -%}{%- if painting.tags -%}{%- assign gallery_tags = gallery_tags | concat: painting.tags -%}{%- endif -%}{%- endfor -%}{%- assign gallery_tags = gallery_tags | uniq | sort -%}{%- assign ordered_tags = '' | split: '' -%}{%- for tag in site.gallery_tag_order -%}{%- if gallery_tags contains tag -%}{%- assign ordered_tags = ordered_tags | push: tag -%}{%- endif -%}{%- endfor -%}{%- for tag in gallery_tags -%}{%- unless ordered_tags contains tag -%}{%- assign ordered_tags = ordered_tags | push: tag -%}{%- endunless -%}{%- endfor -%}<button type="button" class="ig-filter is-active" data-ig-filter="*" aria-selected="true">#All</button>{%- for tag in ordered_tags -%}{%- assign tag_key = tag | downcase %} <button type="button" class="ig-filter" data-ig-filter="{{ tag_key }}" aria-selected="false">#{{ tag }}</button>{%- endfor -%}</span>
 {: .about-bio-panel .about-bio-gallery}
 
 Blogs are coming soon!
@@ -114,7 +114,7 @@ Yolo's latest updates, newest first.
       <i class="fa-regular fa-envelope" aria-hidden="true"></i>
     </a>
     <a
-      href="https://discord.com/users/1152784980167106662"
+      href="https://discord.gg/{{ site.discord_invite }}"
       class="about-prompt-action about-prompt-discord"
       aria-label="Discord"
       title="Discord"

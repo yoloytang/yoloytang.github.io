@@ -2565,15 +2565,9 @@ ul.task-list input[type="checkbox"] {
       transform: translateX(-0.04em);
     }
 
-    // The YouTube glyph is wide and short: stretched a little taller, and nudged down so its
-    // middle lines up with the X and Instagram glyphs.
-    // The play triangle is a cut-out; a small white patch behind it keeps it white on the
-    // dark theme too.
-    .fa-youtube {
+    // Discord's glyph is wide and short, so it needs a larger size than the round icons.
+    .fa-discord {
       font-size: 1.1em;
-      color: #ff0000;
-      transform: translateY(0.02em) scaleY(1.12);
-      background: linear-gradient(#fff, #fff) 50% 46% / 36% 42% no-repeat;
     }
 
     // In Pixiv's blue, as in the profile drawer; a solid square, so a little under the
@@ -3258,7 +3252,8 @@ html.has-profile-drawer {
 }
 
 .about-prompt-discord .fa-discord,
-.profile-drawer-links .fa-discord {
+.profile-drawer-links .fa-discord,
+.ig-icon .fa-discord {
   color: #5865f2;
 }
 
