@@ -12,3 +12,9 @@ node_modules/
 vendor
 .idea
 research-map-editor.html
+
+# Machine-specific CV build logs and source synchronization files
+assets/pdf/cv_yunlong_tang/*.fls
+assets/pdf/cv_yunlong_tang/*.fdb_latexmk
+assets/pdf/cv_yunlong_tang/*.log
+assets/pdf/cv_yunlong_tang/*.synctex.gz
