@@ -681,7 +681,8 @@ ul.task-list input[type="checkbox"] {
     font-family: "Hiragino Mincho ProN", "Yu Mincho", Georgia, serif;
     margin-left: auto;
     margin-right: -0.45rem;
-    transform: translateY(2px);
+    // Not transform: that would trap the menu's z-index, and the docked card's quick links would cover it.
+    top: 2px;
 
     summary {
       display: inline-flex;
