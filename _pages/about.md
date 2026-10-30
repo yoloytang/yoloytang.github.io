@@ -32,7 +32,7 @@ jupyter: false
 Yolo Y. Tang is a final-year Ph.D. candidate at the [University of Rochester](https://www.rochester.edu/) (UR), advised by [Prof. Chenliang Xu](https://www.cs.rochester.edu/~cxu22/index.html), working on <a href="https://github.com/yoloytang/Awesome-LLMs-for-Video-Understanding">LMMs/Agents &times; Video Understanding</a>. She earned her M.S. from UR in 2025 en route to her Ph.D. and received her B.Eng. from [SUSTech](https://www.sustech.edu.cn/en/) in 2023. Yolo has interned at [Amazon](https://www.aboutamazon.com/), [ByteDance](https://www.bytedance.com/en/), and [Tencent](https://www.tencent.com/).
 {: .about-bio-academic}
 
-Yolo is drawing for fun, self-teaching and not open to paid commissions or commercial collaborations. She is also really into J-pop and cosplay — maybe she’s just cosplaying as a researcher :) Please don't deadname or misgender Yolo. She prefers Yolo (in English) or 悠洛 (Yōuluo in Mandarin and ゆら/Yura in Japanese).
+Yolo is drawing for fun (self-teaching and not open to commissions or commercial collaborations). She is also really into J-pop and cosplay — maybe she’s just cosplaying as a researcher :) Please don't deadname or misgender Yolo. She prefers Yolo (in English) or 悠洛 (Yōuluo in Mandarin and ゆら/Yura in Japanese).
 {: .about-bio-creative}
 
 Swipe left or right to explore the full map and click a node to show related papers.
