@@ -23,6 +23,7 @@
   tags: [yuri, original, group]
   x_url: https://x.com/yoloytang_art/status/2072263626984206741
   instagram_url: https://www.instagram.com/p/DaPidvJm1nK/
+  pixiv_url: https://www.pixiv.net/artworks/148927709
 
 - images:
     - evev-08-21-26.png
@@ -34,4 +35,15 @@
   tags: [original, group]
   x_url: https://x.com/yoloytang_art/status/2090991119912083939
   instagram_url: https://www.instagram.com/p/DcUyTOsRZ9f/
+  pixiv_url: https://www.pixiv.net/artworks/148927955
+
+- images:
+    - rainy.png
+    - rainy2.png
+  caption: "Meeting Early in a Parallel Universe <br>もしも別の世界で、もっと早く出会えていたら"
+  date: 2026-10-30
+  tags: [yuri, original, group]
+  x_url: https://x.com/yoloytang_art/status/2116389017378001278
+  instagram_url: https://www.instagram.com/p/DfJSiu6m3I_
+  pixiv_url: https://www.pixiv.net/artworks/151493775
   pin: true
