@@ -14,4 +14,4 @@ bundle exec jekyll serve
 - `_pages/about.md`: landing page
 - `_pages/research.md`: research map and selected publications
 - `_bibliography/papers.bib`: publication metadata
-- `assets/pdf/cv_yunlong_tang/cv.pdf`: CV
+- `assets/pdf/cv_yoloytang/cv.pdf`: CV
