@@ -14,7 +14,7 @@ vendor
 research-map-editor.html
 
 # Machine-specific CV build logs and source synchronization files
-assets/pdf/cv_yunlong_tang/*.fls
-assets/pdf/cv_yunlong_tang/*.fdb_latexmk
-assets/pdf/cv_yunlong_tang/*.log
-assets/pdf/cv_yunlong_tang/*.synctex.gz
+assets/pdf/cv_yoloytang/*.fls
+assets/pdf/cv_yoloytang/*.fdb_latexmk
+assets/pdf/cv_yoloytang/*.log
+assets/pdf/cv_yoloytang/*.synctex.gz
