@@ -856,7 +856,7 @@ layout: default
 
       // While the card is docked, a curtain covers the screen from the top down to the card's
       // middle: the page scrolls away under it rather than showing around and above the card.
-      // It draws the page's own background, with the screentone dots lined up to the page's,
+      // It draws the page's own background, with the grid lines lined up to the page's,
       // so the strip looks empty instead of like a panel.
       var dockCurtain = document.createElement('div');
       dockCurtain.className = 'about-dock-curtain';
@@ -867,11 +867,11 @@ layout: default
       function alignDockCurtain() {
         dockCurtainFrame = null;
         if (!promptBox.classList.contains('is-docked')) return;
-        // Like the page's (_nijigen.scss): dots every 22px from the top of the page, the second
-        // layer 11px further in, and the top-of-page gradient pinned to the page's top.
+        // Like the page's (_nijigen.scss): grid lines every 22px from the top of the page, and
+        // the top-of-page gradient pinned to the page's top.
         var top = window.scrollY + dockCurtain.getBoundingClientRect().top;
         var offset = -(((top % 22) + 22) % 22);
-        dockCurtain.style.backgroundPosition = '0 ' + offset + 'px, 11px ' + (offset + 11) + 'px, 0 ' + -top + 'px';
+        dockCurtain.style.backgroundPosition = '0 ' + offset + 'px, 0 ' + offset + 'px, 0 ' + -top + 'px';
       }
 
       window.addEventListener('scroll', function () {

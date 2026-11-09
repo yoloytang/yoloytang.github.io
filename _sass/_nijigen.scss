@@ -1,6 +1,6 @@
 /*******************************************************************************
  * 二次元 — anime skin layer. Keeps the pink·white·blue palette and all rainbow
- * elements; adds rounded type, manga screentone, springy motion, and gradient
+ * elements; adds rounded type, grid-paper background, springy motion, and gradient
  * accents on top. To roll back: remove the "nijigen" import in
  * assets/css/main.scss, delete this file, and revert the google_fonts line
  * in _config.yml.
@@ -9,12 +9,13 @@
 // Springy easing shared by all hover motion.
 $niji-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-// ---- Manga screentone (网点) over the existing top gradient -----------------
+// ---- Grid paper (格子) over the existing top gradient ------------------------
+// 22px cells: pink vertical lines, blue horizontal lines.
 
 html,
 body {
-  background-image: radial-gradient(color-mix(in srgb, var(--global-theme-color) 6%, transparent) 1px, transparent 1.6px),
-    radial-gradient(color-mix(in srgb, var(--global-accent-blue) 6%, transparent) 1px, transparent 1.6px),
+  background-image: linear-gradient(to right, color-mix(in srgb, var(--global-theme-color) 6%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--global-accent-blue) 6%, transparent) 1px, transparent 1px),
     linear-gradient(180deg, var(--global-bg-gradient-top) 0%, var(--global-bg-color) 36%, var(--global-bg-color) 100%);
   background-repeat: repeat, repeat, no-repeat;
   background-size:
@@ -23,7 +24,7 @@ body {
     100% min(92vh, 960px);
   background-position:
     0 0,
-    11px 11px,
+    0 0,
     0 0;
   min-height: 100%;
   min-height: 100vh;
@@ -265,37 +266,16 @@ hr {
   opacity: 1;
 }
 
-// ---- NEW Q: 阅读进度条 · 粉蓝离散色块（日夜统一） ----------------------------------
-// 深粉→粉→浅粉→淡粉→淡蓝→浅蓝→蓝→深蓝 的硬切色块，30px 一段、240px 一个周期，
-// 首尾相接保证流动动画无缝循环。最淡的两段仍是明确的粉/蓝，不接近纯白。
+// ---- NEW Q: 阅读进度条 · 纯主题色（日间玫粉，夜间蓝），2px 细线、60% 不透明 ------------
 
-$niji-progress-pwb: repeating-linear-gradient(
-  90deg,
-  #db2777 0 30px,
-  #f472b6 30px 60px,
-  #f9a8d4 60px 90px,
-  #fbcfe8 90px 120px,
-  #bfdbfe 120px 150px,
-  #93c5fd 150px 180px,
-  #60a5fa 180px 210px,
-  #2f6fad 210px 240px
-);
-
-@keyframes niji-rainbow-flow {
-  to {
-    background-position-x: 240px; // 一个完整周期，无缝衔接
-  }
+.reading-progress {
+  height: 2px;
 }
 
 .reading-progress .reading-progress-fill {
-  background-image: $niji-progress-pwb;
-  animation: niji-rainbow-flow 8s linear infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .reading-progress .reading-progress-fill {
-    animation: none;
-  }
+  background-image: none;
+  // color-mix 而不是 opacity：只让条变淡，前端的星星（::after）保持不透明
+  background-color: color-mix(in srgb, var(--global-theme-color) 60%, transparent);
 }
 
 // ---- R(改): 去掉导航栏底边线——进度条紧贴其下，不需要再叠一条线 --------------------
@@ -382,12 +362,12 @@ html[data-theme="dark"] .card:hover {
     0 4px 14px rgba(142, 200, 245, 0.14);
 }
 
-// ---- NEW QQ: 深色模式网点增强（浅色模式不变） --------------------------------------
+// ---- NEW QQ: 深色模式格子增强（浅色模式不变） --------------------------------------
 
 html[data-theme="dark"],
 html[data-theme="dark"] body {
-  background-image: radial-gradient(color-mix(in srgb, var(--global-theme-color) 10%, transparent) 1px, transparent 1.6px),
-    radial-gradient(color-mix(in srgb, var(--global-accent-blue) 10%, transparent) 1px, transparent 1.6px),
+  background-image: linear-gradient(to right, color-mix(in srgb, var(--global-theme-color) 10%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--global-accent-blue) 10%, transparent) 1px, transparent 1px),
     linear-gradient(180deg, var(--global-bg-gradient-top) 0%, var(--global-bg-color) 36%, var(--global-bg-color) 100%);
 }
 
@@ -520,6 +500,12 @@ html[data-theme="dark"] body {
 
 .reading-progress.is-progressing .reading-progress-fill::after {
   opacity: 1;
+}
+
+// 夜间：星星跟随主题色（蓝），和进度条同色
+html[data-theme="dark"] .reading-progress .reading-progress-fill::after {
+  color: var(--global-theme-color);
+  text-shadow: 0 0 5px color-mix(in srgb, var(--global-theme-color) 55%, transparent);
 }
 
 // ---- K5: 主题切换圆形揭幕（View Transitions，配合 theme.js） -----------------------

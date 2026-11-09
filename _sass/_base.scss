@@ -1205,7 +1205,7 @@ ul.task-list input[type="checkbox"] {
 
   // Behind the docked card, from the top of the screen down to the card's middle (height
   // set in about.liquid): hides the page scrolling up past it. Same background as html/body
-  // in _nijigen.scss; JS keeps background-position in step with the page's dots.
+  // in _nijigen.scss; JS keeps background-position in step with the page's grid.
   .about-dock-curtain {
     display: none;
     position: fixed;
@@ -1215,8 +1215,8 @@ ul.task-list input[type="checkbox"] {
     z-index: 1019;
     height: var(--about-dock-curtain, 0px);
     background-color: var(--global-bg-color);
-    background-image: radial-gradient(color-mix(in srgb, var(--global-theme-color) 6%, transparent) 1px, transparent 1.6px),
-      radial-gradient(color-mix(in srgb, var(--global-accent-blue) 6%, transparent) 1px, transparent 1.6px),
+    background-image: linear-gradient(to right, color-mix(in srgb, var(--global-theme-color) 6%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in srgb, var(--global-accent-blue) 6%, transparent) 1px, transparent 1px),
       linear-gradient(180deg, var(--global-bg-gradient-top) 0%, var(--global-bg-color) 36%, var(--global-bg-color) 100%);
     background-repeat: repeat, repeat, no-repeat;
     background-size:
@@ -1225,8 +1225,8 @@ ul.task-list input[type="checkbox"] {
       100% min(92vh, 960px);
 
     html[data-theme="dark"] & {
-      background-image: radial-gradient(color-mix(in srgb, var(--global-theme-color) 10%, transparent) 1px, transparent 1.6px),
-        radial-gradient(color-mix(in srgb, var(--global-accent-blue) 10%, transparent) 1px, transparent 1.6px),
+      background-image: linear-gradient(to right, color-mix(in srgb, var(--global-theme-color) 10%, transparent) 1px, transparent 1px),
+        linear-gradient(to bottom, color-mix(in srgb, var(--global-accent-blue) 10%, transparent) 1px, transparent 1px),
         linear-gradient(180deg, var(--global-bg-gradient-top) 0%, var(--global-bg-color) 36%, var(--global-bg-color) 100%);
     }
   }

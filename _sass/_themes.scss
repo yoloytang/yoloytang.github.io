@@ -15,7 +15,7 @@
   --global-hover-text-color: #{$white-color};
   --global-accent-blue: #{$theme-sky};
   --global-nav-active-color: #{$theme-sky};
-  --global-bg-gradient-top: #d9e6f7;
+  --global-bg-gradient-top: var(--global-bg-color); // no gradient: same as page background
   --global-heading-h3-color: #355a8a;
   --global-table-header-bg: rgba(47, 111, 173, 0.1);
   --global-meta-color: #4a6fa8;
@@ -82,7 +82,7 @@ html[data-theme="dark"] {
   --global-hover-text-color: #{$white-color};
   --global-accent-blue: #66c2ff;
   --global-nav-active-color: #66c2ff;
-  --global-bg-gradient-top: #243a56;
+  --global-bg-gradient-top: var(--global-bg-color); // no gradient: same as page background
   --global-heading-h3-color: #a8c8ec;
   --global-table-header-bg: rgba(126, 184, 232, 0.14);
   --global-meta-color: #8eb8e0;
