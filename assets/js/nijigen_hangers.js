@@ -22,9 +22,12 @@
   // cards (panels open) sit 24px under the navbar, so they keep a short hanger.
   var MIN_GAP = 20;
 
-  ["left", "right"].forEach(function (side) {
+  // Class names are spelled out in full: production PurgeCSS only keeps selectors whose class
+  // name appears literally in the built HTML/JS, so a name glued together at runtime
+  // ("about-hanger-" + side) gets its CSS rule dropped on the live site.
+  ["about-hanger-left", "about-hanger-right"].forEach(function (sideClass) {
     var hanger = document.createElement("span");
-    hanger.className = "about-hanger about-hanger-" + side;
+    hanger.className = "about-hanger " + sideClass;
     hanger.setAttribute("aria-hidden", "true");
     hanger.innerHTML = '<span class="about-hanger-strand"></span><span class="about-hanger-end"></span>';
     card.appendChild(hanger);
