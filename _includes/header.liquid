@@ -18,10 +18,22 @@
           {% endif %}
         {% endif %}
       {% endfor %}
+      {% comment %}
+        The photos are several MB but show at 32–52px: use jekyll-imagemagick's 480px WebP copy
+        (photo.jpg -> photo-480.webp), falling back to the original if that copy is missing.
+      {% endcomment %}
+      {% assign navbar_avatar_small = navbar_avatar_path
+        | append: '#'
+        | replace: '.jpg#', '-480.webp'
+        | replace: '.jpeg#', '-480.webp'
+        | replace: '.png#', '-480.webp'
+        | replace: '#', ''
+      %}
       <button type="button" class="navbar-menu-avatar" aria-label="Open links" aria-controls="profile-drawer" aria-expanded="false">
         <img
           {% if navbar_avatar_path != '' %}
-            src="{{ navbar_avatar_path }}"
+            src="{{ navbar_avatar_small }}"
+            onerror="this.onerror=null;this.src='{{ navbar_avatar_path }}'"
           {% endif %}
           alt=""
           aria-hidden="true"
@@ -113,7 +125,8 @@
       <button type="button" class="profile-drawer-photo" aria-label="Show profile photo">
         <img
           {% if navbar_avatar_path != '' %}
-            src="{{ navbar_avatar_path }}"
+            src="{{ navbar_avatar_small }}"
+            onerror="this.onerror=null;this.src='{{ navbar_avatar_path }}'"
           {% endif %}
           alt=""
         >
@@ -205,12 +218,8 @@
     </p>
   </aside>
   <div id="navbar-avatar-modal" class="navbar-avatar-modal" aria-hidden="true">
-    <img
-      {% if navbar_avatar_path != '' %}
-        src="{{ navbar_avatar_path }}"
-      {% endif %}
-      alt="Profile photo"
-    >
+    <!-- No src until opened: showProfilePhoto() sets it, so the hidden modal costs no download. -->
+    <img alt="Profile photo">
   </div>
   <script>
     (function () {
@@ -259,10 +268,27 @@
         }
       }
 
+      // The photos are several MB, so show jekyll-imagemagick's resized WebP copy
+      // (photo.jpg -> photo-480.webp) and fall back to the original if that copy is missing.
+      // currentAvatar and sessionStorage keep the original path, which the ring and the gallery key on.
+      function setAvatarImageSrc(img, original, width) {
+        var resized = original.replace(/\.(jpe?g|png)$/i, '-' + width + '.webp');
+        img.onerror =
+          resized === original
+            ? null
+            : function () {
+                img.onerror = null;
+                img.src = original;
+              };
+        img.src = resized;
+      }
+      // The gallery's avatars use the same copies.
+      window.setAvatarImageSrc = setAvatarImageSrc;
+
       function setAvatar(selectedAvatar) {
         currentAvatar = selectedAvatar;
-        avatarImage.src = selectedAvatar;
-        if (drawerPhoto) drawerPhoto.src = selectedAvatar;
+        setAvatarImageSrc(avatarImage, selectedAvatar, 480);
+        if (drawerPhoto) setAvatarImageSrc(drawerPhoto, selectedAvatar, 480);
         rememberAvatar(selectedAvatar);
       }
 
@@ -283,7 +309,8 @@
 
       // Shows the current photo, then moves the navbar avatar on to the next one in the ring.
       function showProfilePhoto() {
-        if (currentAvatar && avatarModalImage) avatarModalImage.src = currentAvatar;
+        // Shown up to 420px wide, so the 800px copy stays sharp on 2x screens.
+        if (currentAvatar && avatarModalImage) setAvatarImageSrc(avatarModalImage, currentAvatar, 800);
         avatarModal.classList.add('active');
         avatarModal.setAttribute('aria-hidden', 'false');
         if (avatarImages.length && avatarImage) setAvatar(nextAvatar(currentAvatar));

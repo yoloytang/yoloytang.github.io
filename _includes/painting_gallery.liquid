@@ -20,6 +20,14 @@
     {% endif %}
   {% endif %}
 {% endfor %}
+{% comment %} Small slot: use the 480px WebP copy (see header.liquid), falling back to the original. {% endcomment %}
+{% assign ig_avatar_small = ig_avatar
+  | append: '#'
+  | replace: '.jpg#', '-480.webp'
+  | replace: '.jpeg#', '-480.webp'
+  | replace: '.png#', '-480.webp'
+  | replace: '#', ''
+%}
 
 {% assign all_tags = '' | split: '' %}
 {% for painting in site.data.paintings %}
@@ -92,7 +100,13 @@
       >
         <header class="ig-post-header">
           <button type="button" class="ig-avatar-button" aria-label="Show profile photo">
-            <img class="ig-avatar" src="{{ ig_avatar }}" alt="{{ ig_handle }}" loading="lazy">
+            <img
+              class="ig-avatar"
+              src="{{ ig_avatar_small }}"
+              onerror="this.onerror=null;this.src='{{ ig_avatar }}'"
+              alt="{{ ig_handle }}"
+              loading="lazy"
+            >
           </button>
           <div class="ig-post-meta">
             <span class="ig-username-row">
@@ -482,7 +496,9 @@
       if (!stored) return;
       var avatars = document.querySelectorAll('.ig-avatar');
       for (var i = 0; i < avatars.length; i++) {
-        avatars[i].src = stored;
+        // stored is the original photo; header.liquid's helper swaps in its small WebP copy.
+        if (window.setAvatarImageSrc) window.setAvatarImageSrc(avatars[i], stored, 480);
+        else avatars[i].src = stored;
       }
     }
     syncGalleryAvatar();

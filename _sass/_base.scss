@@ -1,3 +1,5 @@
+@use "sass:map";
+
 /*******************************************************************************
  * Styles for the base elements of the theme.
  ******************************************************************************/
@@ -1191,12 +1193,13 @@ ul.task-list input[type="checkbox"] {
     }
   }
 
-  // While a panel is open the card sticks to the top of the screen, just under the 3rem
-  // navbar; it stays in the flow, so the open panel simply follows it. (A single value, not
-  // calc(3rem + 0.75rem): the production minifier breaks calc(a + b).)
+  // While a panel is open the card sticks to the top of the screen, 1.5rem under the 3rem
+  // navbar (room for the hangers, nijigen_hangers.js); it stays in the flow, so the open
+  // panel simply follows it. (A single value, not calc(3rem + 1.5rem): the production minifier
+  // breaks calc(a + b).)
   .about-prompt.is-docked {
     position: sticky;
-    top: 3.75rem;
+    top: 4.5rem;
     z-index: 1020;
     box-shadow:
       0 14px 36px rgba(31, 45, 76, 0.16),
@@ -1286,6 +1289,13 @@ ul.task-list input[type="checkbox"] {
       grid-template-rows: 1fr;
       opacity: 1;
       transform: translateY(0);
+    }
+
+    // Closing (closeAllInlinePanels in about.liquid): a quick fade in place, keeping its room,
+    // so the card's landing spot doesn't move; the panel leaves the layout once it's gone.
+    &.is-visible.is-leaving {
+      opacity: 0;
+      transition: opacity 0.18s ease;
     }
   }
 
@@ -2725,26 +2735,28 @@ ul.task-list input[type="checkbox"] {
     display: block;
   }
 
+  // Same top as the news panel (-2.25rem, like the page itself), so every panel's docked card
+  // leaves a 24px gap under the navbar for the hangers (nijigen_hangers.js).
   &.is-blog-panel-open {
-    margin-top: -3.25rem;
+    margin-top: -2.25rem;
     padding-top: 1.375rem;
   }
 
   &.is-research-panel-open,
   &.is-gallery-panel-open {
-    margin-top: -3.25rem;
+    margin-top: -2.25rem;
     padding-top: 1.375rem;
   }
 
   @media (max-width: 575px) {
     &.is-blog-panel-open {
-      margin-top: -3.25rem;
+      margin-top: -2.25rem;
       padding-top: 1.375rem;
     }
 
     &.is-research-panel-open,
     &.is-gallery-panel-open {
-      margin-top: -3.25rem;
+      margin-top: -2.25rem;
       padding-top: 1.375rem;
     }
   }
@@ -4410,7 +4422,8 @@ nav[data-toggle="toc"] {
 
 .medium-zoom-overlay,
 .medium-zoom-image--opened {
-  z-index: 999;
+  // Above the navbar (1030), the docked prompt card (1020) and every other fixed layer.
+  z-index: 1090;
 }
 
 #toc-sidebar {
@@ -4621,16 +4634,153 @@ ninja-keys::part(ninja-input-wrapper) {
 }
 
 // Research Map (subway-style visualization)
+
+// Track colors. Every line, station, topic dot and label in _includes/research_map.liquid takes
+// its color from a track (classes rm-stroke-*, rm-fill-*, rm-text-*), so a palette is just a set
+// of tokens. Pick one with $research-map-palette:
+//   "wairo"  和色: muted traditional Japanese hues
+//   "flat"   the original bright hues, without the gradients
+//   "duo"    only the site's rose and blue families, told apart by depth
+//   "quiet"  soft lines, every topic label in ink, a faint dot-grid paper
+// frame = the shell's outline, title = "Research Roadmap", accent = scroll rail and arrows.
+// Optional: label (one color for every topic label but "Others"), grid (dot-grid paper).
+$research-map-palette: "quiet" !default;
+$research-map-tracks: temporal, reasoning, st, eval, spatial, code, others;
+$research-map-palettes: (
+  "wairo": (
+    light: (
+      temporal: #2b5f8f,
+      reasoning: #b0476f,
+      st: #7a62a6,
+      eval: #2f8a99,
+      spatial: #c97893,
+      code: #6b7c9e,
+      others: #8d94a1,
+      frame: rgba(28, 36, 51, 0.16),
+      title: var(--global-text-color),
+      accent: var(--global-text-color-light),
+    ),
+    dark: (
+      temporal: #7ea7d8,
+      reasoning: #e08fb0,
+      st: #a996d6,
+      eval: #6cbfca,
+      spatial: #f0b2c6,
+      code: #9aa8c0,
+      others: #7c8598,
+      frame: rgba(228, 233, 244, 0.16),
+      title: var(--global-text-color),
+      accent: var(--global-text-color-light),
+    ),
+  ),
+  "flat": (
+    light: (
+      temporal: #2563eb,
+      reasoning: #db2777,
+      st: #7c3aed,
+      eval: #0ea5e9,
+      spatial: #ec6aa9,
+      code: #6b7c9e,
+      others: #9ca3af,
+      frame: rgba(184, 61, 127, 0.28),
+      title: var(--global-theme-color),
+      accent: var(--global-theme-color),
+    ),
+    dark: (
+      temporal: #60a5fa,
+      reasoning: #f472b6,
+      st: #a78bfa,
+      eval: #7dd3fc,
+      spatial: #f9a8d4,
+      code: #a8b6d4,
+      others: #8b93a3,
+      frame: rgba(126, 184, 232, 0.32),
+      title: var(--global-theme-color),
+      accent: var(--global-theme-color),
+    ),
+  ),
+  "duo": (
+    light: (
+      temporal: #2f6fad,
+      reasoning: #b83d7f,
+      st: #22406e,
+      eval: #4a8cc8,
+      spatial: #cf6f9b,
+      code: #6b7c9e,
+      others: #8d94a1,
+      frame: var(--global-card-border-color),
+      title: var(--global-theme-color),
+      accent: var(--global-theme-color),
+    ),
+    dark: (
+      temporal: #5aa9ec,
+      reasoning: #ff8fba,
+      st: #8ea2e6,
+      eval: #9fd4ff,
+      spatial: #ffc0d8,
+      code: #a8b6d4,
+      others: #7c8598,
+      frame: var(--global-card-border-color),
+      title: var(--global-theme-color),
+      accent: var(--global-theme-color),
+    ),
+  ),
+  "quiet": (
+    light: (
+      temporal: #5c90d7,
+      reasoning: #d9709d,
+      st: #8f77cc,
+      eval: #58b5ca,
+      spatial: #f095b6,
+      code: #9aa3b5,
+      others: #9aa1ad,
+      frame: rgba(28, 36, 51, 0.12),
+      title: var(--global-text-color),
+      accent: var(--global-text-color-light),
+      label: var(--global-text-color),
+      grid: rgba(28, 36, 51, 0.09),
+    ),
+    dark: (
+      temporal: #5c90d7,
+      reasoning: #d3719e,
+      st: #8f77cc,
+      eval: #53aec2,
+      spatial: #e693b2,
+      code: #7d879b,
+      others: #6c7588,
+      frame: rgba(228, 233, 244, 0.12),
+      title: var(--global-text-color),
+      accent: var(--global-text-color-light),
+      label: var(--global-text-color),
+      grid: rgba(228, 233, 244, 0.07),
+    ),
+  ),
+);
+
+@mixin research-map-tokens($mode) {
+  @each $name, $value in map.get($research-map-palettes, $research-map-palette, $mode) {
+    --rm-#{$name}: #{$value};
+  }
+}
+
 .research-map-shell {
+  @include research-map-tokens(light);
+
   position: relative;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
   margin: 0.5rem 0 0;
-  padding: 1px;
-  overflow: hidden;
+  // No overflow clip here and no background on .research-map (this shell paints it): the
+  // scrollable map is a composited layer, and with a rounded clip around it or an opaque
+  // background of its own, some browsers now and then drop the bottom edge of the outline.
+  border: 1px solid var(--rm-frame);
   border-radius: 12px;
-  background: linear-gradient(105deg, #db2777 0%, #f9a8d4 38%, #38bdf8 68%, #2563eb 100%);
+  background: var(--global-bg-color);
+}
+
+html[data-theme="dark"] .research-map-shell {
+  @include research-map-tokens(dark);
 }
 
 .research-map {
@@ -4644,9 +4794,9 @@ ninja-keys::part(ninja-input-wrapper) {
   scrollbar-width: none;
   cursor: default;
   border: 0;
-  border-radius: 10px;
+  border-radius: 11px;
   padding-bottom: 0.25rem;
-  background: var(--global-bg-color);
+  background: transparent;
 
   &.is-pannable {
     cursor: grab;
@@ -4677,16 +4827,23 @@ ninja-keys::part(ninja-input-wrapper) {
   }
 }
 
+// Dot-grid paper, for palettes that set a grid color. `local` lets it scroll with the map.
+@if map.has-key(map.get($research-map-palettes, $research-map-palette, light), grid) {
+  .research-map {
+    background-image: radial-gradient(var(--rm-grid) 1px, transparent 1.2px);
+    background-position: 9px 9px;
+    background-size: 18px 18px;
+    background-attachment: local;
+  }
+}
+
 // Lives on the shell rather than in the SVG so it stays put while the map scrolls.
 .research-map-title {
   position: absolute;
   top: 0.55rem;
   left: 0.85rem;
   z-index: 3;
-  background-image: linear-gradient(90deg, #db2777, #2563eb);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--rm-title);
   font-family: "Hiragino Mincho ProN", "Yu Mincho", Georgia, serif;
   font-size: 1rem;
   font-weight: 700;
@@ -4696,35 +4853,52 @@ ninja-keys::part(ninja-input-wrapper) {
   user-select: none;
 }
 
-// Replaces the native scrollbar; research.js sizes and positions the thumb.
+// Replaces the native scrollbar, drawn like a stretch of the map itself: a hairline track with a
+// hollow terminus at each end, and the thumb a short, thicker run of line riding on it.
+// research.js positions the thumb (it travels the full width of this box, between the termini).
 .research-map-rail {
   position: absolute;
   left: 50%;
-  bottom: 0.6rem;
+  bottom: 0.45rem;
   z-index: 2;
-  width: clamp(7.5rem, 34%, 17.5rem);
-  height: 4px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--global-theme-color) 14%, transparent);
+  width: clamp(6rem, 18%, 9rem);
+  // Taller than what is drawn, so it is easy to grab.
+  height: 14px;
+  background: linear-gradient(var(--rm-rail-line), var(--rm-rail-line)) center / 100% 1px no-repeat;
   cursor: pointer;
   opacity: 0;
   pointer-events: none;
   touch-action: none;
   transform: translateX(-50%);
-  transition:
-    opacity 0.3s ease,
-    height 0.2s ease;
+  transition: opacity 0.3s ease;
+  --rm-rail-line: color-mix(in srgb, var(--rm-accent) 50%, transparent);
 
-  // Easier to grab than the 4px bar itself.
-  &::before {
+  // The two termini, just outside the ends of the track.
+  &::before,
+  &::after {
     content: "";
     position: absolute;
-    inset: -8px -4px;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    margin-top: -3.5px;
+    box-sizing: border-box;
+    border: 1.5px solid color-mix(in srgb, var(--rm-accent) 75%, transparent);
+    border-radius: 50%;
+    background: var(--global-bg-color);
+  }
+
+  &::before {
+    left: -10px;
+  }
+
+  &::after {
+    right: -10px;
   }
 }
 
 .research-map.is-pannable ~ .research-map-rail {
-  opacity: 0.55;
+  opacity: 0.85;
   pointer-events: auto;
 }
 
@@ -4733,21 +4907,27 @@ ninja-keys::part(ninja-input-wrapper) {
   opacity: 1;
 }
 
-.research-map-rail:hover,
-.research-map-rail.is-dragging {
-  height: 6px;
-}
-
 .research-map-rail-thumb {
   position: absolute;
-  top: 0;
-  bottom: 0;
+  top: 50%;
   left: 0;
-  width: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, #db2777 0%, #f9a8d4 38%, #38bdf8 68%, #2563eb 100%);
-  box-shadow: 0 0 6px color-mix(in srgb, #db2777 28%, transparent);
+  width: 1.5rem;
+  height: 4px;
+  margin-top: -2px;
+  border-radius: 999px;
+  background: var(--rm-accent);
   cursor: grab;
+  transition:
+    height 0.18s ease,
+    margin-top 0.18s ease,
+    background-color 0.18s ease;
+
+  .research-map-rail:hover &,
+  .research-map-rail.is-dragging & {
+    height: 6px;
+    margin-top: -3px;
+    background: var(--global-theme-color);
+  }
 
   .research-map-rail.is-dragging & {
     cursor: grabbing;
@@ -4756,8 +4936,8 @@ ninja-keys::part(ninja-input-wrapper) {
 
 .research-map-scroll {
   position: absolute;
-  top: 1px;
-  bottom: 1px;
+  top: 0;
+  bottom: 0;
   z-index: 2;
   display: none;
   align-items: center;
@@ -4769,7 +4949,7 @@ ninja-keys::part(ninja-input-wrapper) {
   font-family: "Hiragino Mincho ProN", "Yu Mincho", Georgia, serif;
   font-size: 2.4rem;
   line-height: 1;
-  text-shadow: 0 1px 4px rgba(255, 255, 255, 0.95);
+  color: var(--rm-accent);
 
   @media (max-width: 899px) {
     display: inline-flex;
@@ -4780,22 +4960,21 @@ ninja-keys::part(ninja-input-wrapper) {
   }
 }
 
+// The arrows sit on a fade of the page background, so the map just fades out under them.
 .research-map-scroll-left {
-  left: 1px;
+  left: 0;
   justify-content: flex-start;
   padding-left: 0.58rem;
-  border-radius: 10px 0 0 10px;
-  color: #db2777;
-  background: linear-gradient(90deg, rgba(219, 39, 119, 0.34), rgba(249, 168, 212, 0.18), transparent);
+  border-radius: 11px 0 0 11px;
+  background: linear-gradient(90deg, var(--global-bg-color) 30%, transparent);
 }
 
 .research-map-scroll-right {
-  right: 1px;
+  right: 0;
   justify-content: flex-end;
   padding-right: 0.58rem;
-  border-radius: 0 10px 10px 0;
-  color: #2563eb;
-  background: linear-gradient(270deg, rgba(37, 99, 235, 0.34), rgba(56, 189, 248, 0.18), transparent);
+  border-radius: 0 11px 11px 0;
+  background: linear-gradient(270deg, var(--global-bg-color) 30%, transparent);
 }
 
 .rm-bg {
@@ -4866,122 +5045,25 @@ ninja-keys::part(ninja-input-wrapper) {
   }
 }
 
-.rm-dot-purple {
-  fill: #7c3aed;
-  color: #7c3aed;
+@each $track in $research-map-tracks {
+  .rm-stroke-#{$track} {
+    stroke: var(--rm-#{$track});
+  }
+
+  // color too: a topic dot's glow is drop-shadow(currentColor).
+  .rm-fill-#{$track} {
+    fill: var(--rm-#{$track});
+    color: var(--rm-#{$track});
+  }
+
+  .rm-text-#{$track} {
+    fill: var(--rm-label, var(--rm-#{$track}));
+  }
 }
 
-.rm-line-spatial {
-  stroke: #f472b6;
-}
-
-.rm-fill-spatial {
-  fill: #f472b6;
-}
-
-.rm-text-spatial {
-  fill: #f472b6;
-}
-
-.rm-dot-spatial {
-  fill: #f472b6;
-  color: #f472b6;
-}
-
-.rm-dot-blue {
-  fill: #2563eb;
-  color: #2563eb;
-}
-
-.rm-dot-programmatic {
-  fill: url(#grad-bvb-node);
-  color: #7c3aed;
-}
-
-.rm-text-programmatic {
-  fill: url(#grad-bvb-node);
-}
-
-html[data-theme="dark"] {
-  .rm-line-blue {
-    stroke: #60a5fa;
-  }
-
-  .rm-fill-blue {
-    fill: #60a5fa;
-  }
-
-  .rm-text-blue {
-    fill: #60a5fa;
-  }
-
-  .rm-dot-blue {
-    fill: #60a5fa;
-    color: #60a5fa;
-  }
-
-  .rm-line-purple {
-    stroke: #a78bfa;
-  }
-
-  .rm-fill-purple {
-    fill: #a78bfa;
-  }
-
-  .rm-text-purple {
-    fill: #a78bfa;
-  }
-
-  .rm-dot-purple {
-    fill: #a78bfa;
-    color: #a78bfa;
-  }
-
-  .rm-line-spatial {
-    stroke: #f9a8d4;
-  }
-
-  .rm-fill-spatial {
-    fill: #f9a8d4;
-  }
-
-  .rm-text-spatial {
-    fill: #f9a8d4;
-  }
-
-  .rm-dot-spatial {
-    fill: #f9a8d4;
-    color: #f9a8d4;
-  }
-
-  .rm-dot-programmatic {
-    color: #c4b5fd;
-  }
-
-  .rm-grad-programmatic stop:nth-child(1) {
-    stop-color: #60a5fa;
-  }
-
-  .rm-grad-programmatic stop:nth-child(2) {
-    stop-color: #7dd3fc;
-  }
-
-  .rm-grad-programmatic stop:nth-child(3) {
-    stop-color: #a78bfa;
-  }
-
-  .rm-grad-programmatic stop:nth-child(4) {
-    stop-color: #f472b6;
-  }
-
-  .rm-grad-programmatic stop:nth-child(5) {
-    stop-color: #f9a8d4;
-  }
-
-  // Blue-led at night, like the page title.
-  .research-map-title {
-    background-image: linear-gradient(90deg, #66c2ff, #ff8fba);
-  }
+// "Others" stays muted even when a palette gives every topic label one color.
+.rm-text-others {
+  fill: var(--rm-others);
 }
 
 .rm-dot {

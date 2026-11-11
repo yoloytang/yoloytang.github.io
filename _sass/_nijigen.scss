@@ -846,24 +846,6 @@ html:not([data-theme="dark"]) #search-toggle:hover {
   color: var(--global-theme-color);
 }
 
-// ---- NEW R1: 研究地图外框：粉蓝渐变描边（滚动条见 _base.scss 的 .research-map-rail） ----
-
-// 外框不做 overflow 裁切、.research-map 不铺底色（底色由外框的 padding-box 层画）：
-// 可滚动的地图是合成层，外面再套圆角裁切或它自己带不透明底色时，个别浏览器会偶尔吃掉底边描边。
-.research-map-shell {
-  padding: 0;
-  border: 1.5px solid transparent;
-  background:
-    linear-gradient(var(--global-bg-color), var(--global-bg-color)) padding-box,
-    linear-gradient(105deg, #db2777 0%, #f9a8d4 38%, #38bdf8 68%, #2563eb 100%) border-box;
-  overflow: visible;
-}
-
-.research-map {
-  border-radius: 10.5px;
-  background: transparent;
-}
-
 // ---- 修复：移动端 Chrome 开面板后无限下滑 ------------------------------------------
 // Chrome 的滚动锚定（scroll anchoring）会在瀑布流重排时不断补偿滚动位置，
 // 与懒加载图片的连锁重排形成反馈循环（Safari 无此机制故不复现）。整页关闭锚定。
@@ -917,4 +899,319 @@ ninja-keys {
 
 ::selection {
   background: color-mix(in srgb, var(--global-theme-color) 24%, transparent);
+}
+
+// ---- 吊牌挂件：首页文本框由两根挂件挂在导航栏下（配合 assets/js/nijigen_hangers.js） -------------
+// Academic 模式：细绳 + 黑色长尾夹（海报展区挂论文的那种）；Creative 模式：薄纱丝带 + 小蝴蝶结。
+// 长度跟着文本框走：打开面板时收上去，关上时放下来。文本框本身不晃。JS 量出长度写入
+// --about-hanger-length（纯 px 值，这里不写 calc(a + b)：生产环境的压缩器会删掉空格把它压坏）。
+// 回滚：删掉这一段、那个 JS 文件和 _layouts/about.liquid 里引用它的那行 <script>。面板打开时
+// 文本框离导航栏 24px（_base.scss 里 is-*-panel-open 的 margin-top 和 .is-docked 的 top），
+// 也是给挂件留的位置，可一并改回 -3.25rem / 3.75rem。
+
+$about-binder-body: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='22' viewBox='0 0 20 22'%3E%3Cpath d='M2 11.5H18L16.3 19.5Q16 20.5 15 20.5H5Q4 20.5 3.7 19.5Z'/%3E%3C/svg%3E");
+$about-binder-wire: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='22' viewBox='0 0 20 22'%3E%3Cpath d='M5.5 12L8.6 3.2Q10 0.8 11.4 3.2L14.5 12' fill='none' stroke='black' stroke-width='1.1'/%3E%3Crect x='3' y='12.6' width='14' height='0.8'/%3E%3C/svg%3E");
+$about-bow-base: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='24' viewBox='0 0 36 24'%3E%3Cpath d='M18 9C12 2 3 1 3 7.5C3 14 12 14 18 9Z'/%3E%3Cpath d='M18 9C24 2 33 1 33 7.5C33 14 24 14 18 9Z'/%3E%3Cpath d='M16.5 10L11 22.5L14.2 21.2L15.6 23.6L19.2 11Z'/%3E%3Cpath d='M19.5 10L25 22.5L21.8 21.2L20.4 23.6L16.8 11Z'/%3E%3Crect x='14.8' y='5.8' width='6.4' height='6.4' rx='2'/%3E%3C/svg%3E");
+$about-bow-shade: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='24' viewBox='0 0 36 24'%3E%3Crect x='14.8' y='5.8' width='6.4' height='6.4' rx='2'/%3E%3Cpath d='M14.8 8.2C11 5.6 7 5.2 5.6 7.2C7.4 6.6 11 7.4 14.8 9.6Z'/%3E%3Cpath d='M21.2 8.2C25 5.6 29 5.2 30.4 7.2C28.6 6.6 25 7.4 21.2 9.6Z'/%3E%3C/svg%3E");
+
+.about-jp .about-prompt {
+  // Academic：细绳 / 钢丝把手是灰色，夹子本体接近文字色（夜间就成了银色）。
+  --about-cord: color-mix(in srgb, var(--global-text-color) 42%, var(--global-card-bg-color));
+  --about-clip: color-mix(in srgb, var(--global-text-color) 78%, var(--global-card-bg-color));
+  // Creative：薄纱丝带。
+  --about-ribbon: color-mix(in srgb, var(--global-theme-color) 52%, white);
+  --about-ribbon-fill: color-mix(in srgb, var(--about-ribbon) 26%, transparent);
+  --about-ribbon-edge: color-mix(in srgb, var(--about-ribbon) 80%, transparent);
+  --about-ribbon-sheen: rgba(255, 255, 255, 0.45);
+}
+
+html[data-theme="dark"] .about-jp .about-prompt {
+  --about-cord: color-mix(in srgb, var(--global-text-color) 55%, var(--global-card-bg-color));
+  --about-ribbon: color-mix(in srgb, var(--global-theme-color) 80%, white);
+  --about-ribbon-sheen: rgba(255, 255, 255, 0.14);
+}
+
+// 共用：挂件从文本框上沿往上伸到导航栏下面；下端的夹子 / 蝴蝶结压在文本框上沿（整根往下伸进 5px）。
+.about-hanger {
+  position: absolute;
+  bottom: 100%;
+  left: 9%;
+  width: 10px;
+  height: var(--about-hanger-length, 0px);
+  margin-bottom: -5px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+
+  @media (max-width: 575px) {
+    left: 12%;
+  }
+}
+
+.about-hanger-right {
+  right: 9%;
+  left: auto;
+
+  @media (max-width: 575px) {
+    right: 12%;
+    left: auto;
+  }
+}
+
+.about-jp .about-prompt.has-hangers .about-hanger {
+  opacity: 1;
+}
+
+.about-hanger-strand {
+  position: absolute;
+  top: 0;
+}
+
+.about-hanger-end {
+  position: absolute;
+  left: 50%;
+  z-index: 1;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+  }
+}
+
+// Academic：1.5px 细绳，下端黑色长尾夹夹住文本框上沿，两根钢丝把手合拢穿在绳上。
+.about-jp:not(.is-creative-mode) .about-prompt {
+  .about-hanger-strand {
+    right: 4.25px;
+    bottom: 18px;
+    left: 4.25px;
+    background: var(--about-cord);
+  }
+
+  .about-hanger-end {
+    bottom: -2px;
+    width: 20px;
+    height: 22px;
+    margin-left: -10px;
+
+    &::before {
+      background: var(--about-clip);
+      -webkit-mask-image: $about-binder-body;
+      mask-image: $about-binder-body;
+    }
+
+    &::after {
+      background: var(--about-cord);
+      -webkit-mask-image: $about-binder-wire;
+      mask-image: $about-binder-wire;
+    }
+  }
+}
+
+// Creative：6px 薄纱丝带（两条 1px 实色细边 + 中间一道高光，底色半透明），下端一个半透明小蝴蝶结。
+.about-jp.is-creative-mode .about-prompt {
+  .about-hanger-strand {
+    right: 2px;
+    bottom: 9px;
+    left: 2px;
+    background: linear-gradient(90deg, var(--about-ribbon-edge) 0 1px, transparent 1px),
+      linear-gradient(270deg, var(--about-ribbon-edge) 0 1px, transparent 1px),
+      linear-gradient(90deg, transparent 30%, var(--about-ribbon-sheen) 50%, transparent 70%);
+    background-color: var(--about-ribbon-fill);
+  }
+
+  .about-hanger-end {
+    bottom: -5px;
+    width: 30px;
+    height: 20px;
+    margin-left: -15px;
+
+    &::before {
+      background: color-mix(in srgb, var(--about-ribbon) 62%, transparent);
+      -webkit-mask-image: $about-bow-base;
+      mask-image: $about-bow-base;
+    }
+
+    // 结和两只耳朵里的褶。
+    &::after {
+      background: color-mix(in srgb, var(--about-ribbon), black 14%);
+      -webkit-mask-image: $about-bow-shade;
+      mask-image: $about-bow-shade;
+    }
+  }
+}
+
+// ---- 主题色收敛：粉色（夜间是蓝）从装饰色改成反馈色 ---------------------------------------
+// 静止时：正文链接和论文标题用墨色（链接带一条淡淡的主题色细下划线），图标用次要灰，
+// 阴影和装饰线用中性墨色。只有悬停 / 聚焦 / 选中时才亮主题色。
+// 开关：把 $niji-quiet-accent 改成 false，这一段整块不生效，恢复原来的样子。
+$niji-quiet-accent: true !default;
+
+@if $niji-quiet-accent {
+  :root {
+    --global-link-color: var(--global-text-color);
+    --global-link-underline: color-mix(in srgb, var(--global-theme-color) 55%, transparent);
+    --global-icon-color: var(--global-text-color-light);
+    // 论文标题：比正文墨色柔一档（成片的粗体标题用纯墨色太重）。
+    --global-title-color: color-mix(in srgb, var(--global-text-color) 80%, var(--global-card-bg-color));
+  }
+
+  // A thin light-blue line on the dark page fades away sooner than pink on white.
+  html[data-theme="dark"] {
+    --global-link-underline: color-mix(in srgb, var(--global-theme-color) 70%, transparent);
+  }
+
+  // 正文链接（简介、文章）：墨色 + 1px 淡下划线；悬停变成纯主题色，不再是粉蓝渐变文字。
+  // 选择器照抄 NEW B，同权重、写在后面才压得住；悬停那条的 text-decoration 带 !important。
+  .post article p > a:not([class]):not([class]):not([class]):not([class]),
+  .post article li > a:not([class]):not([class]):not([class]):not([class]),
+  .post p > a:not([class]),
+  .post li > a:not([class]) {
+    color: var(--global-link-color);
+    text-decoration: underline;
+    text-decoration-color: var(--global-link-underline);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    transition:
+      color 0.15s ease,
+      text-decoration-color 0.15s ease;
+  }
+
+  // NEW B 在夜间还有一条带 html[data-theme="dark"] 前缀的渐变规则（权重更高），这里一并列上，
+  // 不然夜间悬停会在下划线下面再多画一条 2px 的渐变线。
+  .post article p > a:not([class]):not([class]):not([class]):not([class]):hover,
+  .post article li > a:not([class]):not([class]):not([class]):not([class]):hover,
+  .post p > a:not([class]):hover,
+  .post li > a:not([class]):hover,
+  html[data-theme="dark"] .post article p > a:not([class]):not([class]):not([class]):not([class]):hover,
+  html[data-theme="dark"] .post article li > a:not([class]):not([class]):not([class]):not([class]):hover,
+  html[data-theme="dark"] .post p > a:not([class]):hover,
+  html[data-theme="dark"] .post li > a:not([class]):hover {
+    background-image: none;
+    -webkit-text-fill-color: currentColor;
+    color: var(--global-theme-color);
+    text-decoration: underline !important;
+  }
+
+  // 论文标题：柔一档的墨色，悬停变主题色（标题本身就是链接，所以原来全是粉的）。
+  .post article .publications ol.bibliography .title > a,
+  .publications ol.bibliography .title > a {
+    color: var(--global-title-color);
+  }
+
+  .post article .publications ol.bibliography .title > a:not([class]):not([class]):not([class]):hover,
+  .publications ol.bibliography .title > a:hover,
+  html[data-theme="dark"] .post article .publications ol.bibliography .title > a:not([class]):not([class]):not([class]):hover,
+  html[data-theme="dark"] .publications ol.bibliography .title > a:hover {
+    background-image: none;
+    -webkit-text-fill-color: currentColor;
+    color: var(--global-theme-color);
+  }
+
+  // 图标：Research / Yo'Log / Gallery 和 Filter / Reset / Sort 的图标平时用次要灰，
+  // 悬停、聚焦、选中时再变主题色。
+  .about-jp .about-quick-links i,
+  .about-jp .research-control-button i,
+  .about-jp .research-control-button svg {
+    color: var(--global-icon-color);
+    transition: color 0.2s ease;
+  }
+
+  .about-jp .about-quick-links a:hover i,
+  .about-jp .about-quick-links a:focus-visible i,
+  .about-jp .about-quick-links a.is-active i,
+  .about-jp .about-quick-links a[aria-expanded="true"] i,
+  .about-jp .research-control-button:hover i,
+  .about-jp .research-control-button:hover svg,
+  .about-jp .research-control-button:focus-visible i,
+  .about-jp .research-control-button:focus-visible svg,
+  .about-jp .research-control-button.active i,
+  .about-jp .research-control-button.active svg,
+  .about-jp .research-control-pill:hover .research-control-button i,
+  .about-jp .research-control-pill:hover .research-control-button svg {
+    color: var(--global-theme-color);
+  }
+
+  // 导航栏下的线（其实是阅读进度条，首页内容短所以总是满的）：中性墨色；
+  // 前端的星星只在滚动时出现，算反馈，保留主题色，但去掉发光。
+  .reading-progress .reading-progress-fill {
+    background-color: color-mix(in srgb, var(--global-text-color) 14%, transparent);
+  }
+
+  .reading-progress .reading-progress-fill::after,
+  html[data-theme="dark"] .reading-progress .reading-progress-fill::after {
+    color: var(--global-theme-color);
+    text-shadow: none;
+  }
+
+  // 阴影和描边：粉色调的投影换成中性墨色。
+  .card:hover {
+    border-color: color-mix(in srgb, var(--global-text-color) 20%, transparent);
+    box-shadow:
+      0 10px 24px rgba(31, 45, 76, 0.1),
+      0 4px 12px rgba(31, 45, 76, 0.06);
+  }
+
+  .about-hello.is-card-bubble {
+    box-shadow:
+      0 8px 26px rgba(31, 45, 76, 0.08),
+      0 3px 10px rgba(31, 45, 76, 0.05);
+  }
+
+  .niji-cite-toast {
+    border-color: color-mix(in srgb, var(--global-text-color) 16%, transparent);
+    box-shadow:
+      0 6px 18px rgba(31, 45, 76, 0.1),
+      0 2px 8px rgba(31, 45, 76, 0.06);
+  }
+
+  // 返回顶部按钮：去掉粉蓝渐变，改成卡片底色 + 细描边的素圆钮；箭头平时次要灰，悬停变主题色。
+  // :root:root 是为了压过 _themes.scss 里 :root / html[data-theme="dark"] 下的同名规则。
+  :root:root #back-to-top {
+    border: 1px solid color-mix(in srgb, var(--global-text-color) 14%, transparent);
+    background: var(--global-card-bg-color);
+    box-shadow: 0 2px 8px rgba(31, 45, 76, 0.08);
+    color: var(--global-icon-color);
+    transition:
+      transform 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease,
+      bottom 0.2s,
+      opacity 0.2s;
+
+    &:hover {
+      border-color: color-mix(in srgb, var(--global-theme-color) 50%, transparent);
+      color: var(--global-theme-color);
+      transform: translateY(-2px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  // 小装饰：标题两侧的淡出细线、列表符号改成中性色。
+  .about-jp article h2::before,
+  .gallery-jp article h2::before,
+  .research-jp article h2::before {
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--global-text-color) 18%, transparent));
+  }
+
+  .about-jp article h2::after,
+  .gallery-jp article h2::after,
+  .research-jp article h2::after {
+    background: linear-gradient(90deg, color-mix(in srgb, var(--global-text-color) 18%, transparent), transparent);
+  }
+
+  .post article ul > li::marker,
+  .post article ol > li::marker,
+  html[data-theme="dark"] .post article ul > li::marker,
+  html[data-theme="dark"] .post article ol > li::marker {
+    color: var(--global-text-color-light);
+  }
 }

@@ -1,9 +1,5 @@
-<!-- Bootsrap & MDB scripts -->
+<!--
+  Bootstrap script. MDB's JS is not loaded: it only added ripple classes that common.js then removed
+  again; tooltips, popovers, dropdowns and collapse all come from Bootstrap. MDB's CSS is still in head.liquid.
+-->
 <script defer src="{{ '/assets/js/bootstrap.bundle.min.js' | relative_url }}"></script>
-<!-- <script src="{{ '/assets/js/mdb.min.js' | relative_url }}"></script> -->
-<script
-  defer
-  src="{{ site.third_party_libraries.mdb.url.js }}"
-  integrity="{{ site.third_party_libraries.mdb.integrity.js }}"
-  crossorigin="anonymous"
-></script>

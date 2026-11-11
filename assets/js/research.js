@@ -572,12 +572,11 @@
     updateMapRail();
   }
 
+  // The thumb is a short, fixed-length run of line (its length is set in CSS): only its
+  // position shows how far the map has scrolled, not how much of the map is in view.
   function mapRailMetrics() {
-    var railWidth = mapRail.clientWidth;
-    var thumbWidth = Math.max(railWidth * (trigger.clientWidth / trigger.scrollWidth), 24);
     return {
-      travel: Math.max(railWidth - thumbWidth, 0),
-      thumbWidth: thumbWidth,
+      travel: Math.max(mapRail.clientWidth - mapRailThumb.offsetWidth, 0),
       scrollable: trigger.scrollWidth - trigger.clientWidth,
     };
   }
@@ -585,7 +584,6 @@
   function updateMapRail() {
     if (!mapRailThumb || !mapCanPan()) return;
     var metrics = mapRailMetrics();
-    mapRailThumb.style.width = metrics.thumbWidth + "px";
     mapRailThumb.style.transform = "translateX(" + metrics.travel * (trigger.scrollLeft / metrics.scrollable) + "px)";
   }
 

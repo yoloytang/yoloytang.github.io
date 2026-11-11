@@ -3,37 +3,16 @@
   <button type="button" class="research-map-scroll research-map-scroll-left" aria-label="Scroll research map left">‹</button>
   <div class="research-map" id="research-map-trigger">
     <svg viewBox="-35 -75 1125 308" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Research map organized as subway lines">
-      <defs>
-        <linearGradient id="grad-pink-blue" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="#DB2777"/>
-          <stop offset="100%" stop-color="#2563EB"/>
-        </linearGradient>
-        <linearGradient id="grad-bvb-node" class="rm-grad-programmatic" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#2563EB"/>
-          <stop offset="25%" stop-color="#38BDF8"/>
-          <stop offset="50%" stop-color="#7C3AED"/>
-          <stop offset="75%" stop-color="#DB2777"/>
-          <stop offset="100%" stop-color="#F9A8D4"/>
-        </linearGradient>
-        <linearGradient id="grad-programmatic" class="rm-grad-programmatic" gradientUnits="userSpaceOnUse" x1="934" y1="85" x2="1045" y2="85">
-          <stop offset="0%" stop-color="#2563EB"/>
-          <stop offset="25%" stop-color="#38BDF8"/>
-          <stop offset="50%" stop-color="#7C3AED"/>
-          <stop offset="75%" stop-color="#DB2777"/>
-          <stop offset="100%" stop-color="#F9A8D4"/>
-        </linearGradient>
-      </defs>
-
       <!-- === Lines (back to front) === -->
-      <path class="rm-line-blue" d="M100,85 L470,85" stroke="#2563EB" stroke-width="6" fill="none" stroke-linecap="round"/>
-      <path class="rm-line-purple" d="M470,85 L830,85" stroke="#7C3AED" stroke-width="6" fill="none" stroke-linecap="round"/>
-      <path d="M140,160 L295,160 C375,160 455,75 470,85 C525,50 605,0 695,0 L695,0"
-            stroke="#38BDF8" stroke-width="6" fill="none" stroke-linecap="round"/>
-      <path class="rm-line-spatial" d="M475,0 L695,0" stroke="#F9A8D4" stroke-width="6" fill="none" stroke-linecap="round"/>
-      <path d="M100,85 C170,35 190,5 265,0 L295,0 C370,5 420,55 470,85"
-            stroke="#DB2777" stroke-width="6" fill="none" stroke-linecap="round"/>
-      <path d="M470,85 C520,120 550,150 625,160 L675,160 C750,155 770,135 830,85"
-            stroke="#DB2777" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <path class="rm-stroke-temporal" d="M100,85 L470,85" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <path class="rm-stroke-st" d="M470,85 L830,85" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <path class="rm-stroke-eval" d="M140,160 L295,160 C375,160 455,75 470,85 C525,50 605,0 695,0 L695,0"
+            stroke-width="6" fill="none" stroke-linecap="round"/>
+      <path class="rm-stroke-spatial" d="M475,0 L695,0" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <path class="rm-stroke-reasoning" d="M100,85 C170,35 190,5 265,0 L295,0 C370,5 420,55 470,85"
+            stroke-width="6" fill="none" stroke-linecap="round"/>
+      <path class="rm-stroke-reasoning" d="M470,85 C520,120 550,150 625,160 L675,160 C750,155 770,135 830,85"
+            stroke-width="6" fill="none" stroke-linecap="round"/>
 
       <!-- Hub -->
       <circle cx="100" cy="85" r="14" fill="var(--global-text-color)"/>
@@ -47,65 +26,65 @@
 
       <!-- Track labels -->
       <g class="rm-topic" data-paper-keys="tang2024avicuna,hua2024v2xum,tang2026takusen,tang2025catv,tang2026bvb,vidllmsurvey" role="button" tabindex="0" aria-label="Show temporal understanding papers">
-        <circle class="rm-dot rm-dot-blue" r="5" cx="179" cy="65" style="animation-delay:0s"/>
-        <text x="190" y="70" class="rm-label rm-text-blue" fill="#2563EB">Temporal Understanding</text>
+        <circle class="rm-dot rm-fill-temporal" r="5" cx="179" cy="65" style="animation-delay:0s"/>
+        <text x="190" y="70" class="rm-label rm-text-temporal">Temporal Understanding</text>
       </g>
       <g class="rm-topic" data-paper-keys="tang2025videor4,tang2025videolmm_posttraining,tang2026bvb,vidllmsurvey" role="button" tabindex="0" aria-label="Show video reasoning papers">
-        <circle class="rm-dot" r="5" cx="214" cy="-15" fill="#DB2777" style="color:#DB2777;animation-delay:.45s"/>
-        <text x="225" y="-10" class="rm-label" fill="#DB2777">Video Reasoning</text>
+        <circle class="rm-dot rm-fill-reasoning" r="5" cx="214" cy="-15" style="animation-delay:.45s"/>
+        <text x="225" y="-10" class="rm-label rm-text-reasoning">Video Reasoning</text>
       </g>
       <g class="rm-topic" data-paper-keys="tang2024cardiff,tang2025catv,tang2025videor4,tang2026bvb,vidllmsurvey" role="button" tabindex="0" aria-label="Show spatiotemporal LMMs and agents papers">
-        <circle class="rm-dot rm-dot-purple" r="5" cx="548" cy="65" style="animation-delay:.9s"/>
-        <text x="655" y="70" class="rm-label rm-text-purple" fill="#7C3AED" text-anchor="middle">Spatiotemporal LMMs/Agents</text>
+        <circle class="rm-dot rm-fill-st" r="5" cx="548" cy="65" style="animation-delay:.9s"/>
+        <text x="655" y="70" class="rm-label rm-text-st" text-anchor="middle">Spatiotemporal LMMs/Agents</text>
       </g>
       <g class="rm-topic" data-paper-keys="tang2024vidcompostion,tang2025mmperspective,tang2026bvb,vidllmsurvey" role="button" tabindex="0" aria-label="Show LMMs/Agents evaluation papers">
-        <circle class="rm-dot" r="5" cx="129" cy="145" fill="#38BDF8" style="color:#38BDF8;animation-delay:1.35s"/>
-        <text x="140" y="150" class="rm-label" fill="#38BDF8">LMMs/Agents Evaluation</text>
+        <circle class="rm-dot rm-fill-eval" r="5" cx="129" cy="145" style="animation-delay:1.35s"/>
+        <text x="140" y="150" class="rm-label rm-text-eval">LMMs/Agents Evaluation</text>
       </g>
       <g class="rm-topic" data-paper-keys="tang2025mmperspective,tang2026bvb" role="button" tabindex="0" aria-label="Show spatial understanding papers">
-        <circle class="rm-dot rm-dot-spatial" r="5" cx="462" cy="-15" style="animation-delay:.7s"/>
-        <text x="473" y="-10" class="rm-label rm-text-spatial" fill="#F9A8D4">Spatial Understanding</text>
+        <circle class="rm-dot rm-fill-spatial" r="5" cx="462" cy="-15" style="animation-delay:.7s"/>
+        <text x="473" y="-10" class="rm-label rm-text-spatial">Spatial Understanding</text>
       </g>
 
       <!-- === Stations === -->
       <a href="https://github.com/yoloytang/AVicuna" target="_blank" class="rm-station" data-paper-key="tang2024avicuna" aria-label="Show AVicuna paper">
-        <circle class="rm-fill-blue" cx="210" cy="85" r="8" fill="#2563EB"/>
+        <circle class="rm-fill-temporal" cx="210" cy="85" r="8"/>
         <circle cx="210" cy="85" r="5" class="rm-bg"/>
         <text x="210" y="107" class="rm-name" text-anchor="middle">AVicuna</text>
         <text x="210" y="120" class="rm-venue" text-anchor="middle">[AAAI '25]</text>
       </a>
 
       <a href="https://hanghuacs.github.io/v2xum/" target="_blank" class="rm-station" data-paper-key="hua2024v2xum" aria-label="Show V2Xum-LLM paper">
-        <circle class="rm-fill-blue" cx="340" cy="85" r="8" fill="#2563EB"/>
+        <circle class="rm-fill-temporal" cx="340" cy="85" r="8"/>
         <circle cx="340" cy="85" r="5" class="rm-bg"/>
         <text x="340" y="107" class="rm-name" text-anchor="middle">V2Xum-LLM</text>
         <text x="340" y="120" class="rm-venue" text-anchor="middle">[AAAI '25]</text>
       </a>
 
       <a href="https://yoloytang.me/VidComposition/" target="_blank" class="rm-station" data-paper-key="tang2024vidcompostion" aria-label="Show VidComposition paper">
-        <circle cx="338" cy="152.7" r="8" fill="#38BDF8"/>
+        <circle class="rm-fill-eval" cx="338" cy="152.7" r="8"/>
         <circle cx="338" cy="152.7" r="5" class="rm-bg"/>
         <text x="338" y="178" class="rm-name" text-anchor="middle">VidComposition</text>
         <text x="338" y="191" class="rm-venue" text-anchor="middle">[CVPR '25]</text>
       </a>
 
       <a href="https://yoloytang.me/MMPerspective/" target="_blank" class="rm-station" data-paper-key="tang2025mmperspective" aria-label="Show MMPerspective paper">
-        <circle cx="695" cy="0" r="8" fill="#38BDF8"/>
-        <path class="rm-fill-spatial" d="M687,0 A8,8 0 0,1 703,0 Z" fill="#F9A8D4"/>
+        <circle class="rm-fill-eval" cx="695" cy="0" r="8"/>
+        <path class="rm-fill-spatial" d="M687,0 A8,8 0 0,1 703,0 Z"/>
         <circle cx="695" cy="0" r="5" class="rm-bg"/>
         <text x="695" y="-23" class="rm-name" text-anchor="middle">MMPerspective</text>
         <text x="695" y="-12" class="rm-venue" text-anchor="middle">[NeurIPS '25]</text>
       </a>
 
       <a href="https://github.com/yoloytang/Awesome-Video-LMM-Post-Training" target="_blank" class="rm-station" data-paper-key="tang2025videolmm_posttraining" aria-label="Show Video-LMM Post-Training paper">
-        <circle cx="650" cy="160" r="8" fill="#DB2777"/>
+        <circle class="rm-fill-reasoning" cx="650" cy="160" r="8"/>
         <circle cx="650" cy="160" r="5" class="rm-bg"/>
         <text x="650" y="182" class="rm-name" text-anchor="middle">Video-LMM</text>
         <text x="650" y="195" class="rm-name" text-anchor="middle">Post-Training</text>
       </a>
 
       <a href="https://ojs.aaai.org/index.php/AAAI/article/view/32785" target="_blank" class="rm-station" data-paper-key="tang2024cardiff" aria-label="Show CaRDiff paper">
-        <circle class="rm-fill-purple" cx="590" cy="85" r="8" fill="#7C3AED"/>
+        <circle class="rm-fill-st" cx="590" cy="85" r="8"/>
         <circle cx="590" cy="85" r="5" class="rm-bg"/>
         <text x="590" y="107" class="rm-name" text-anchor="middle">CaRDiff</text>
         <text x="590" y="120" class="rm-venue" text-anchor="middle">[AAAI '25]</text>
@@ -121,36 +100,43 @@
       </a>
 
       <a href="https://github.com/yoloytang/CAT-V" target="_blank" class="rm-station" data-paper-key="tang2025catv" aria-label="Show CAT-V paper">
-        <circle class="rm-fill-purple" cx="710" cy="85" r="8" fill="#7C3AED"/>
+        <circle class="rm-fill-st" cx="710" cy="85" r="8"/>
         <circle cx="710" cy="85" r="5" class="rm-bg"/>
         <text x="710" y="107" class="rm-name" text-anchor="middle">CAT-V</text>
         <text x="710" y="120" class="rm-venue" text-anchor="middle">[AAAI Demo '26]</text>
       </a>
 
       <a href="https://yoloytang.me/Video-R4/" target="_blank" class="rm-station" data-paper-key="tang2025videor4" aria-label="Show Video-R4 paper">
-        <circle cx="830" cy="85" r="8" fill="#DB2777"/>
-        <path class="rm-fill-purple" d="M822,85 A8,8 0 0,1 838,85 Z" fill="#7C3AED"/>
+        <circle class="rm-fill-reasoning" cx="830" cy="85" r="8"/>
+        <path class="rm-fill-st" d="M822,85 A8,8 0 0,1 838,85 Z"/>
         <circle cx="830" cy="85" r="5" class="rm-bg"/>
         <text x="830" y="57" class="rm-name" text-anchor="middle">Video-R4</text>
         <text x="830" y="68" class="rm-venue" text-anchor="middle">[CVPR '26]</text>
       </a>
 
       <!-- Lines into BVB -->
-      <path class="rm-line-purple" d="M838,82 L908,82" stroke="#7C3AED" stroke-width="4" fill="none" stroke-linecap="round"/>
-      <path d="M838,88 L908,88" stroke="#DB2777" stroke-width="4" fill="none" stroke-linecap="round"/>
-      <path class="rm-line-spatial" d="M703,-2 C840,5 920,69 920,73" stroke="#F9A8D4" stroke-width="4" fill="none" stroke-linecap="round"/>
-      <path d="M703,2 C790,0 920,69 920,73" stroke="#38BDF8" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path class="rm-stroke-st" d="M838,82 L908,82" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path class="rm-stroke-reasoning" d="M838,88 L908,88" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path class="rm-stroke-spatial" d="M703,-2 C840,5 920,69 920,73" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path class="rm-stroke-eval" d="M703,2 C790,0 920,69 920,73" stroke-width="4" fill="none" stroke-linecap="round"/>
 
       <a href="https://yoloytang.me/BVB/" target="_blank" class="rm-station" data-paper-key="tang2026bvb" aria-label="Show BVB paper">
-        <circle cx="920" cy="85" r="12" fill="url(#grad-bvb-node)"/>
+        <circle cx="920" cy="85" r="12.5" class="rm-bg"/>
+        <g class="rm-ring" transform="rotate(-90 920 85)" fill="none" stroke-width="6">
+          <circle class="rm-stroke-temporal" cx="920" cy="85" r="9" pathLength="5" stroke-dasharray="1 4"/>
+          <circle class="rm-stroke-eval" cx="920" cy="85" r="9" pathLength="5" stroke-dasharray="1 4" stroke-dashoffset="-1"/>
+          <circle class="rm-stroke-st" cx="920" cy="85" r="9" pathLength="5" stroke-dasharray="1 4" stroke-dashoffset="-2"/>
+          <circle class="rm-stroke-reasoning" cx="920" cy="85" r="9" pathLength="5" stroke-dasharray="1 4" stroke-dashoffset="-3"/>
+          <circle class="rm-stroke-spatial" cx="920" cy="85" r="9" pathLength="5" stroke-dasharray="1 4" stroke-dashoffset="-4"/>
+        </g>
         <circle cx="920" cy="85" r="6" class="rm-bg"/>
         <text x="920" y="107" class="rm-name" text-anchor="middle">BVB</text>
       </a>
 
-      <path class="rm-line-programmatic" d="M934,85 L1045,85" stroke="url(#grad-programmatic)" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="6,5"/>
+      <path class="rm-stroke-code" d="M934,85 L1045,85" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="6,5"/>
       <g class="rm-topic" data-paper-keys="tang2026bvb" role="button" tabindex="0" aria-label="Show video × code papers">
-        <circle class="rm-dot rm-dot-programmatic" r="5" cx="942" cy="65" style="animation-delay:2.1s"/>
-        <text x="998" y="70" class="rm-label rm-text-programmatic" text-anchor="middle">Video × Code</text>
+        <circle class="rm-dot rm-fill-code" r="5" cx="942" cy="65" style="animation-delay:2.1s"/>
+        <text x="998" y="70" class="rm-label rm-text-code" text-anchor="middle">Video × Code</text>
       </g>
       <circle cx="1057" cy="85" r="12" fill="var(--global-text-color)"/>
       <circle cx="1057" cy="85" r="10" class="rm-bg"/>
@@ -158,8 +144,8 @@
 
       <!-- Others (bottom-right) -->
       <g class="rm-topic rm-topic-others" data-paper-keys="tang2025ai4anime,hua2024mmcomposition,wang2023caption" role="button" tabindex="0" aria-label="Show other work">
-        <circle class="rm-dot" r="3.5" cx="873" cy="190" fill="#9CA3AF" style="color:#9CA3AF;animation-delay:1.8s"/>
-        <text x="884" y="195" class="rm-label" fill="#9CA3AF">Others</text>
+        <circle class="rm-dot rm-fill-others" r="3.5" cx="873" cy="190" style="animation-delay:1.8s"/>
+        <text x="884" y="195" class="rm-label rm-text-others">Others</text>
       </g>
     </svg>
   </div>

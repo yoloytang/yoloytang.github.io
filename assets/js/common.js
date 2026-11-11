@@ -78,7 +78,6 @@ $(document).ready(function () {
       fallbackToggle();
     }
   });
-  $("a").removeClass("waves-effect waves-light");
 
   // bootstrap-toc
   if ($("#toc-sidebar").length) {

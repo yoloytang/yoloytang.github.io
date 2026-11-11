@@ -768,12 +768,14 @@ layout: default
           return;
         }
         // Keep the short hint while gliding back; the bio types out once the card has landed.
+        // The card already has the bio's height on the way down (reservePromptHeight), so the
+        // typing doesn't make it grow, and lift its centered top, after it lands.
         setPromptDocked(false, function () {
-          showPromptText(null);
+          showPromptText(null, releasePromptHeight);
         });
       }
 
-      function showPromptText(name) {
+      function showPromptText(name, onDone) {
         var searching = isPromptSearching();
         var ghosts = searching ? [] : capturePromptText();
         promptBox.classList.toggle('has-panel-hint', !!name);
@@ -781,7 +783,34 @@ layout: default
           promptBox.classList.toggle(panelHintClasses[key], key === name);
         });
         // In search mode the hint types in on leaving it.
-        if (!searching) typePromptText(ghosts);
+        if (!searching) typePromptText(ghosts, onDone);
+        else if (onDone) onDone();
+      }
+
+      // Holds the card at the height it will have once the bio is typed out: at home the card
+      // is centered, so every line the typing adds would otherwise lift its top (and shorten
+      // the hangers) by half a line. Measured with the bio shown instead of the panel hint.
+      function reservePromptHeight() {
+        releasePromptHeight();
+        if (isPromptSearching()) return;
+        finishPromptTyping();
+        var hints = ['has-panel-hint'].concat(Object.keys(panelHintClasses).map(function (key) {
+          return panelHintClasses[key];
+        })).filter(function (name) {
+          return promptBox.classList.contains(name);
+        });
+        hints.forEach(function (name) {
+          promptBox.classList.remove(name);
+        });
+        var height = promptBox.offsetHeight;
+        hints.forEach(function (name) {
+          promptBox.classList.add(name);
+        });
+        promptBox.style.minHeight = height + 'px';
+      }
+
+      function releasePromptHeight() {
+        promptBox.style.minHeight = '';
       }
 
       // An open panel docks the card at the bottom of the screen.
@@ -791,19 +820,33 @@ layout: default
           return;
         }
         var from = promptBox.getBoundingClientRect();
+        releasePromptHeight();
         promptBox.classList.toggle('is-docked', docked);
         aboutRoot.classList.toggle('has-docked-prompt', docked);
         fitQuickLinks();
+        if (!docked) reservePromptHeight();
         updateDockSpace();
-        glidePrompt(from, onLanded);
+        glidePrompt(from, onLanded, docked ? easeRaise : easeLower);
+      }
+
+      // Going up the card is pulled: it sets off fast and slows into the dock. Going down it is
+      // lowered: it starts from rest and settles without overshoot (critically damped, scaled
+      // to arrive exactly at the end). Both map progress 0..1 to distance covered 0..1.
+      function easeRaise(progress) {
+        return 1 - Math.pow(1 - progress, 3);
+      }
+
+      function easeLower(progress) {
+        var k = 7;
+        return (1 - (1 + k * progress) * Math.exp(-k * progress)) / (1 - (1 + k) * Math.exp(-k));
       }
 
       // Glides the card from `from` to wherever it is laid out, re-reading that spot every
-      // frame: on the way back the page around it is still restoring, so the target moves.
-      // A newer glide cancels an older one (and its onLanded).
+      // frame: on the way back the page's top padding is still easing back, so the target
+      // moves a little. A newer glide cancels an older one (and its onLanded).
       var promptGlideId = 0;
 
-      function glidePrompt(from, onLanded) {
+      function glidePrompt(from, onLanded, ease) {
         var id = ++promptGlideId;
         var duration = 620;
         var start = null;
@@ -811,13 +854,16 @@ layout: default
         function place(progress) {
           promptBox.style.transform = '';
           var to = promptBox.getBoundingClientRect();
-          var rest = Math.pow(1 - progress, 3);
+          var rest = 1 - ease(progress);
           promptBox.style.transform = 'translate(' + (from.left - to.left) * rest + 'px, ' + (from.top - to.top) * rest + 'px)';
+          // The hangers (nijigen_hangers.js) re-measure in the same frame, so they stay attached.
+          if (window.aboutHangersSync) window.aboutHangersSync();
         }
 
         function finish() {
           promptBox.style.transform = '';
           promptBox.style.transition = '';
+          if (window.aboutHangersSync) window.aboutHangersSync();
           if (onLanded) onLanded();
         }
 
@@ -886,9 +932,15 @@ layout: default
         new ResizeObserver(updateDockSpace).observe(promptBox);
       }
 
+      // An open panel is .is-visible; while it fades out before the card lowers
+      // (closeAllInlinePanels) it is .is-leaving as well, and already counts as closed.
+      function panelIsOpen(panel) {
+        return panel.classList.contains('is-visible') && !panel.classList.contains('is-leaving');
+      }
+
       function closeInlinePanel(panel, trigger) {
         if (!panel) return;
-        panel.classList.remove('is-visible');
+        panel.classList.remove('is-visible', 'is-leaving');
         if (trigger) {
           trigger.setAttribute('aria-expanded', 'false');
           trigger.classList.remove('is-active');
@@ -937,6 +989,9 @@ layout: default
           !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         window.clearTimeout(panelRestoreTimer);
         window.clearTimeout(panelHideTimer);
+        // Reopening while a close is still fading the panel out: call the close off.
+        window.clearTimeout(panelCloseTimer);
+        panelCloseTimer = null;
         aboutRoot.classList.remove('is-panel-restoring');
         aboutRoot.classList.remove('is-mascot-reappearing');
         dismissSpeechBubble();
@@ -945,6 +1000,7 @@ layout: default
           closeInlinePanel(otherPanel, panelButton(otherPanel));
         });
 
+        panel.classList.remove('is-leaving');
         panel.hidden = false;
         if (trigger) {
           trigger.setAttribute('aria-expanded', 'true');
@@ -977,18 +1033,49 @@ layout: default
         }, mascotShowing ? 380 : 260);
       }
 
+      // The open panel fades out in place first and only then leaves the layout, and only then
+      // is the card lowered. Collapsing the panel under a card that is already gliding moved
+      // its landing spot as it went (the card is centered on the page): it crept off the dock,
+      // then lunged down when the panel finally went away.
+      var PANEL_FADE_MS = 180;
+      var panelCloseTimer = null;
+
       function closeAllInlinePanels() {
+        if (panelCloseTimer !== null) return;
         window.clearTimeout(panelHideTimer);
         aboutRoot.classList.remove('is-panel-hiding-mascot');
         dismissSpeechBubble();
+        var fading = false;
         inlinePanels.forEach(function (panel) {
-          closeInlinePanel(panel, panelButton(panel));
+          var trigger = panelButton(panel);
+          if (trigger) {
+            trigger.setAttribute('aria-expanded', 'false');
+            trigger.classList.remove('is-active');
+          }
+          if (panel.classList.contains('is-visible')) {
+            panel.classList.add('is-leaving');
+            fading = true;
+          }
         });
-        // Restore the page layout first, so the card glides towards where it will settle.
-        aboutRoot.classList.remove('is-blog-panel-open', 'is-research-panel-open', 'is-gallery-panel-open');
-        setHeaderTitle(null);
-        scheduleInlinePanelRestore();
-        setPromptPanel(null);
+
+        function lowerCard() {
+          panelCloseTimer = null;
+          inlinePanels.forEach(function (panel) {
+            panel.classList.remove('is-visible', 'is-leaving');
+            panel.hidden = true;
+          });
+          // Restore the page layout first, so the card glides towards where it will settle.
+          aboutRoot.classList.remove('is-blog-panel-open', 'is-research-panel-open', 'is-gallery-panel-open');
+          setHeaderTitle(null);
+          scheduleInlinePanelRestore();
+          setPromptPanel(null);
+        }
+
+        if (fading && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          panelCloseTimer = window.setTimeout(lowerCard, PANEL_FADE_MS);
+        } else {
+          lowerCard();
+        }
       }
 
       collapseInlinePanels = closeAllInlinePanels;
@@ -999,7 +1086,7 @@ layout: default
         var panel = panelForTrigger(trigger);
         if (!panel) return;
         e.preventDefault();
-        if (panel.classList.contains('is-visible')) {
+        if (panelIsOpen(panel)) {
           closeAllInlinePanels();
           return;
         }
@@ -1009,13 +1096,13 @@ layout: default
       // The profile drawer's links (header.liquid) open a panel by name, and leave it open.
       window.openAboutPanel = function (name) {
         var panel = document.querySelector('[data-about-panel="' + name + '"]');
-        if (panel && !panel.classList.contains('is-visible')) openInlinePanel(panel, panelButton(panel));
+        if (panel && !panelIsOpen(panel)) openInlinePanel(panel, panelButton(panel));
       };
 
       // Gallery and paper results from site search: open their panel, then go to the item.
       function openPanelAndReveal(panel, reveal) {
         if (!panel) return;
-        if (panel.classList.contains('is-visible')) reveal();
+        if (panelIsOpen(panel)) reveal();
         else
           openInlinePanel(panel, panelButton(panel), function () {
             // The panel unfolds over 0.58s (grid-template-rows); positions settle after that.
@@ -1395,3 +1482,5 @@ layout: default
   })();
 </script>
 <script defer src="{{ '/assets/js/research.js' | relative_url | bust_file_cache }}"></script>
+<!-- 吊牌挂件: binder clip / ribbon hangers from the navbar to the card -->
+<script defer src="{{ '/assets/js/nijigen_hangers.js' | relative_url | bust_file_cache }}"></script>
