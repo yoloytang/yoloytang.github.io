@@ -66,7 +66,9 @@
           io.unobserve(el);
         });
       },
-      { rootMargin: "0px 0px -8% 0px" }
+      // 卡片的位置一进入视口就显现：目之所及不留空白。未显现时它下移 16px（.niji-to-reveal），
+      // 所以视口下沿多算 24px，抵掉这段下移。
+      { rootMargin: "0px 0px 24px 0px" }
     );
     targets.forEach(function (el) {
       el.classList.add("niji-to-reveal");

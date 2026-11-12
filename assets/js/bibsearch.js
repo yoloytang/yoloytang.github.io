@@ -1,6 +1,8 @@
 import { highlightSearchTerm } from "./highlight-search-term.js";
 
-document.addEventListener("DOMContentLoaded", function () {
+// A module runs once the document is parsed; waiting for DOMContentLoaded as well would leave
+// the field dead (and then wipe what was typed) while later deferred scripts are still loading.
+const start = function () {
   // actual bibsearch logic
   const filterItems = (searchTerm) => {
     document.querySelectorAll(".bibliography, .unloaded").forEach((element) => element.classList.remove("unloaded"));
@@ -50,22 +52,32 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   };
 
+  // research.js shows the count of matches and marks them on the map: tell it when the list
+  // has caught up with the field.
+  const applyFilter = (searchTerm) => {
+    filterItems(searchTerm);
+    window.dispatchEvent(new CustomEvent("bibsearch:filtered"));
+  };
+
+  let timeoutId;
   const updateInputField = () => {
+    clearTimeout(timeoutId); // the hash replaces whatever was still waiting to be filtered
     const hashValue = decodeURIComponent(window.location.hash.substring(1)); // Remove the '#' character
     document.getElementById("bibsearch").value = hashValue;
     // Lowercased like typed input below; the matcher compares against lowercased text.
-    filterItems(hashValue.toLowerCase());
+    applyFilter(hashValue.toLowerCase());
   };
 
   // Sensitive search. Only start searching if there's been no input for 300 ms
-  let timeoutId;
   document.getElementById("bibsearch").addEventListener("input", function () {
     clearTimeout(timeoutId); // Clear the previous timeout
     const searchTerm = this.value.toLowerCase();
-    timeoutId = setTimeout(() => filterItems(searchTerm), 300);
+    timeoutId = setTimeout(() => applyFilter(searchTerm), 300);
   });
 
   window.addEventListener("hashchange", updateInputField); // Update the filter when the hash changes
 
   updateInputField(); // Update filter when page loads
-});
+};
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+else start();

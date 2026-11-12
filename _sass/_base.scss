@@ -1193,50 +1193,10 @@ ul.task-list input[type="checkbox"] {
     }
   }
 
-  // While a panel is open the card sticks to the top of the screen, 1.5rem under the 3rem
-  // navbar (room for the hangers, nijigen_hangers.js); it stays in the flow, so the open
-  // panel simply follows it. (A single value, not calc(3rem + 1.5rem): the production minifier
-  // breaks calc(a + b).)
-  .about-prompt.is-docked {
-    position: sticky;
-    top: 4.5rem;
-    z-index: 1020;
-    box-shadow:
-      0 14px 36px rgba(31, 45, 76, 0.16),
-      0 4px 12px rgba(31, 45, 76, 0.08);
-  }
-
-  // Behind the docked card, from the top of the screen down to the card's middle (height
-  // set in about.liquid): hides the page scrolling up past it. Same background as html/body
-  // in _nijigen.scss; JS keeps background-position in step with the page's grid.
-  .about-dock-curtain {
-    display: none;
-    position: fixed;
-    top: 0;
-    right: 0;
-    left: 0;
-    z-index: 1019;
-    height: var(--about-dock-curtain, 0px);
-    background-color: var(--global-bg-color);
-    background-image: linear-gradient(to right, color-mix(in srgb, var(--global-theme-color) 6%, transparent) 1px, transparent 1px),
-      linear-gradient(to bottom, color-mix(in srgb, var(--global-accent-blue) 6%, transparent) 1px, transparent 1px),
-      linear-gradient(180deg, var(--global-bg-gradient-top) 0%, var(--global-bg-color) 36%, var(--global-bg-color) 100%);
-    background-repeat: repeat, repeat, no-repeat;
-    background-size:
-      22px 22px,
-      22px 22px,
-      100% min(92vh, 960px);
-
-    html[data-theme="dark"] & {
-      background-image: linear-gradient(to right, color-mix(in srgb, var(--global-theme-color) 10%, transparent) 1px, transparent 1px),
-        linear-gradient(to bottom, color-mix(in srgb, var(--global-accent-blue) 10%, transparent) 1px, transparent 1px),
-        linear-gradient(180deg, var(--global-bg-gradient-top) 0%, var(--global-bg-color) 36%, var(--global-bg-color) 100%);
-    }
-  }
-
-  &.has-docked-prompt .about-dock-curtain {
-    display: block;
-  }
+  // While a panel is open the card is "docked" (.is-docked): it sits 1.5rem under the 3rem
+  // navbar (room for the hangers, nijigen_hangers.js) with the open panel right below it. It
+  // is not sticky: it stays in the flow and scrolls away with the page, and the back-to-top
+  // button brings it back.
 
   // Under the card once the row can't hold them even icon-only, or inside a docked card as its
   // last row. Same width as the card, so the row lines up with both of its edges.
@@ -1417,16 +1377,14 @@ ul.task-list input[type="checkbox"] {
     border-radius: 6px !important;
   }
 
+  // The cards start one gutter (the masonry's 24px) under the map frame, whose bottom strip is
+  // their heading. That room is padding rather than margin, so this box's clip (for the open
+  // and close animation) leaves the first row's shadow alone.
   .research-map-paper-panel {
     --research-paper-panel-height: 0px;
     max-height: var(--research-paper-panel-height);
     margin: 0;
-    padding-top: 0.85rem;
-    border-top: 0;
-    background-image: var(--about-kasumi-line);
-    background-position: top center;
-    background-repeat: no-repeat;
-    background-size: 100% 1px;
+    padding-top: 1.5rem;
     opacity: 0;
     overflow: hidden;
     transform: translateY(0.75rem);
@@ -1437,13 +1395,13 @@ ul.task-list input[type="checkbox"] {
       transform 0.78s cubic-bezier(0.22, 1, 0.36, 1);
 
     &.is-visible {
-      margin: 1.25rem 0 1.75rem;
+      margin: 0 0 1.75rem;
       opacity: 1;
       transform: translateY(0);
     }
 
     .publications {
-      margin-top: 0.4rem;
+      margin-top: 0;
     }
 
     // Each paper is a card in the gallery's style, laid out as a masonry like the gallery's
@@ -1533,6 +1491,28 @@ ul.task-list input[type="checkbox"] {
         object-fit: contain;
         border-bottom: 1px solid color-mix(in srgb, var(--global-card-border-color) 60%, transparent);
         background: #fff;
+      }
+
+      // Several teasers (assets/js/pub_teasers.js): the hairline goes under the whole carousel,
+      // dots included, rather than under each figure.
+      > li > .row > .abbr .pub-teasers {
+        border-bottom: 1px solid color-mix(in srgb, var(--global-card-border-color) 60%, transparent);
+        background: #fff;
+
+        img {
+          border-bottom: 0;
+        }
+
+        // The first figure sets the height (pub_teasers.js); the others fit inside it, centred,
+        // at the width the script gives them.
+        &.is-fitted .pub-teasers-slide {
+          height: var(--pub-teasers-height);
+        }
+
+        &.is-fitted .pub-teasers-slide + .pub-teasers-slide img {
+          max-height: var(--pub-teasers-height);
+          margin: 0 auto;
+        }
       }
 
       > li > .row > div[id] {
@@ -1729,374 +1709,41 @@ ul.task-list input[type="checkbox"] {
     text-align: center;
   }
 
-  // Empty until research.js reports a map-node or search filter. Inline flow (not flex)
-  // plus balanced wrapping keeps the clear button beside text when a long label wraps.
-  .research-paper-status {
-    font-size: 0.9rem;
+  // Nothing matches the text filter: one quiet line where the cards would be (research.js).
+  .research-paper-empty {
+    margin: 0.2rem 0 1.4rem;
+    color: var(--global-text-color-light);
+    font-size: 0.82rem;
     text-align: center;
-    text-wrap: balance;
-
-    &.is-active {
-      margin: 0.1rem 0 0.15rem;
-    }
-
-    &.is-empty {
-      margin: 0.6rem 0 1.1rem;
-    }
   }
 
-  .research-paper-status-text {
-    display: inline;
-    margin: 0;
-    color: var(--global-text-color);
+  // (The site-wide rule gives every span the text colour outright.)
+  .research-paper-empty-text {
+    color: inherit;
   }
 
-  .research-paper-status-label {
-    color: var(--global-theme-color);
-    font-weight: 600;
-  }
-
-  .research-paper-status-count {
-    color: var(--global-text-color-light);
-  }
-
-  .research-paper-status-clear {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 1.75rem;
-    height: 1.75rem;
-    margin-left: 0.5rem;
+  .research-paper-empty-clear {
+    margin-left: 0.6rem;
     padding: 0;
-    vertical-align: middle;
-    border: 1px solid var(--global-divider-color);
-    border-radius: 999px;
-    background: transparent;
-    color: var(--global-text-color-light);
+    border: 0;
+    background: none;
+    color: var(--global-text-color);
     font: inherit;
-    font-size: 0.8rem;
-    line-height: 1;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.28em;
     cursor: pointer;
-    transition:
-      color 0.2s ease,
-      border-color 0.2s ease;
+    transition: color 0.2s ease;
 
     &:hover,
     &:focus-visible {
-      border-color: var(--global-theme-color);
       color: var(--global-theme-color);
-    }
-
-    span {
-      display: none;
-    }
-  }
-
-  .research-paper-status.is-empty .research-paper-status-clear {
-    padding: 0 0.85rem;
-    font-size: 0.85rem;
-
-    i {
-      display: none;
-    }
-
-    span {
-      display: inline;
-    }
-  }
-
-  .research-controls {
-    --research-control-size: 2rem;
-    --research-control-wide: 2.3rem;
-    width: min(100%, 860px);
-    max-width: 100%;
-    margin: 0.9rem auto 0;
-  }
-
-  .research-control-buttons {
-    display: flex;
-    flex-wrap: nowrap;
-    justify-content: center;
-    align-items: center;
-    gap: 0.55rem;
-  }
-
-  .research-control-pill {
-    display: inline-flex;
-    align-items: center;
-    min-width: 7.2rem;
-    max-width: 100%;
-    height: var(--research-control-size);
-    overflow: hidden;
-    border: 1px solid var(--global-card-border-color);
-    border-radius: 999px;
-    background: var(--global-card-bg-color);
-    color: var(--global-text-color);
-    transition:
-      border-color 0.45s ease-in-out,
-      flex-basis 0.72s ease-in-out,
-      min-width 0.72s ease-in-out;
-
-    &:hover,
-    &:has(.research-control-button.active) {
-      border-color: var(--global-theme-color);
-      color: var(--global-theme-color);
-    }
-  }
-
-  .research-control-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.42rem;
-    min-width: 7.2rem;
-    min-height: var(--research-control-size);
-    padding: 0.2rem 0.8rem;
-    border: 1px solid var(--global-card-border-color);
-    border-radius: 999px;
-    background: var(--global-card-bg-color);
-    color: var(--global-text-color);
-    cursor: pointer;
-    font-family: "Hiragino Mincho ProN", "Yu Mincho", Georgia, serif;
-    font-size: 0.92rem;
-    transition:
-      border-color 0.45s ease-in-out,
-      color 0.45s ease-in-out,
-      transform 0.45s ease-in-out;
-
-    i,
-    svg {
-      flex: none;
-      color: var(--global-theme-color);
-    }
-
-    // Font Awesome glyphs sit a little above the middle of their box; the drawn filter icon
-    // is raised to line up with them.
-    svg {
-      transform: translateY(-0.07em);
-    }
-
-    &:hover,
-    &.active {
-      border-color: var(--global-theme-color);
-      color: var(--global-theme-color);
-      transform: translateY(-1px);
-    }
-  }
-
-  // Inside a pill everything fills the pill's height, so pills match the bare Reset button.
-  .research-control-pill .research-control-button {
-    flex: 0 0 auto;
-    min-height: 0;
-    height: 100%;
-    min-width: 7.2rem;
-    border: 0;
-    background: transparent;
-    transform: none;
-  }
-
-  .research-controls.mode-search .research-control-search,
-  .research-controls.mode-sort .research-control-sort {
-    flex: 1 1 100%;
-  }
-
-  .research-controls.mode-search .research-control-sort,
-  .research-controls.mode-search > .research-control-buttons > .research-control-button,
-  .research-controls.mode-sort .research-control-search,
-  .research-controls.mode-sort > .research-control-buttons > .research-control-button {
-    min-width: var(--research-control-size);
-    width: var(--research-control-size);
-    padding-left: 0;
-    padding-right: 0;
-  }
-
-  .research-controls.mode-search .research-control-sort span,
-  .research-controls.mode-search > .research-control-buttons > .research-control-button span,
-  .research-controls.mode-sort .research-control-search span,
-  .research-controls.mode-sort > .research-control-buttons > .research-control-button span {
-    display: none;
-  }
-
-  .research-controls.mode-search .research-control-sort > .research-control-button,
-  .research-controls.mode-sort .research-control-search > .research-control-button {
-    min-width: var(--research-control-size);
-    width: var(--research-control-size);
-    padding-left: 0;
-    padding-right: 0;
-  }
-
-  .research-controls.mode-search .research-control-search > .research-control-button {
-    min-width: var(--research-control-wide);
-    width: var(--research-control-wide);
-    padding-left: 0;
-    padding-right: 0;
-  }
-
-  .research-controls.mode-search .research-control-search > .research-control-button span {
-    display: none;
-  }
-
-  .research-control-expansion {
-    flex: 1 1 auto;
-    align-self: stretch;
-    width: 0;
-    min-width: 0;
-    overflow: hidden;
-    opacity: 0;
-    transition:
-      width 0.72s ease-in-out,
-      opacity 0.5s ease-in-out;
-  }
-
-  .research-controls.mode-search .research-control-search .research-control-expansion,
-  .research-controls.mode-sort .research-control-sort .research-control-expansion {
-    width: auto;
-    opacity: 1;
-  }
-
-  .research-control-expansion .bibsearch-form-input {
-    display: block;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding-top: 0.2rem;
-    padding-bottom: 0.2rem;
-    border: 0;
-    box-shadow: none;
-    background: transparent;
-    color: var(--global-text-color);
-
-    &::placeholder {
-      color: var(--global-text-color-light);
-      opacity: 1;
-    }
-  }
-
-  .research-sort-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    width: 100%;
-    height: 100%;
-    padding: 0 0.9rem 0 0.1rem;
-    border: 0;
-    background: transparent;
-    color: var(--global-theme-color);
-    cursor: pointer;
-    font-family: "Hiragino Mincho ProN", "Yu Mincho", Georgia, serif;
-    font-size: 0.92rem;
-    white-space: nowrap;
-
-    i {
-      font-size: 0.68rem;
-      transition: transform 0.2s ease;
-    }
-
-    &[aria-expanded="true"] i {
-      transform: rotate(180deg);
-    }
-
-    &:focus {
-      outline: none;
-    }
-
-    &:focus-visible .research-sort-current {
-      text-decoration: underline;
-      text-underline-offset: 0.2em;
-    }
-  }
-
-  // Lives outside the pill (which clips for its width animation); JS lines its right edge
-  // up with the pill's.
-  .research-controls {
-    position: relative;
-  }
-
-  .research-sort-menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    z-index: 20;
-    display: grid;
-    min-width: 10.5rem;
-    margin-top: 0.45rem;
-    padding: 0.36rem;
-    border: 1px solid color-mix(in srgb, var(--global-card-border-color) 82%, transparent);
-    border-radius: 16px;
-    background: color-mix(in srgb, var(--global-card-bg-color) 96%, white);
-    box-shadow:
-      0 18px 44px rgba(31, 45, 76, 0.16),
-      0 4px 12px rgba(31, 45, 76, 0.08);
-    backdrop-filter: blur(14px);
-
-    button {
-      position: relative;
-      display: flex;
-      align-items: center;
-      min-height: 2.1rem;
-      padding: 0.4rem 1.9rem 0.4rem 0.68rem;
-      border: 0;
-      border-radius: 10px;
-      background: transparent;
-      color: color-mix(in srgb, var(--global-text-color) 78%, var(--global-subtitle-color));
-      cursor: pointer;
-      font-family: "Hiragino Mincho ProN", "Yu Mincho", Georgia, serif;
-      font-size: 0.92rem;
-      line-height: 1.1;
-      text-align: left;
-      white-space: nowrap;
-      transition:
-        background-color 0.18s ease,
-        color 0.18s ease;
-
-      &::after {
-        content: "";
-        position: absolute;
-        right: 0.68rem;
-        width: 0.64rem;
-        height: 0.36rem;
-        border-left: 2px solid var(--global-theme-color);
-        border-bottom: 2px solid var(--global-theme-color);
-        opacity: 0;
-        transform: translateY(-0.08rem) rotate(-45deg);
-      }
-
-      + button {
-        margin-top: 0.12rem;
-      }
-
-      &:hover,
-      &:focus {
-        background-color: color-mix(in srgb, var(--global-theme-color) 8%, transparent);
-        outline: none;
-      }
-
-      &[aria-selected="true"] {
-        background-color: color-mix(in srgb, var(--global-theme-color) 11%, transparent);
-        color: var(--global-theme-color);
-
-        &::after {
-          opacity: 1;
-        }
-      }
     }
   }
 
   @media (max-width: 1080px) {
     .research-map-mobile-hint {
       display: block;
-    }
-
-    .research-control-button {
-      min-width: 5.6rem;
-      padding-left: 0.56rem;
-      padding-right: 0.56rem;
-    }
-
-    .research-controls.mode-search .research-control-search,
-    .research-controls.mode-sort .research-control-sort {
-      flex-basis: 100%;
     }
   }
 
@@ -2701,8 +2348,6 @@ ul.task-list input[type="checkbox"] {
       margin-bottom: 8svh;
     }
   }
-  // No transform here, not even translateY(0): it would pin the docked .about-prompt
-  // (position: fixed) to this element instead of the screen.
   transition:
     padding-top 0.46s ease,
     margin-top 0.46s ease;
@@ -3767,6 +3412,9 @@ html.has-profile-drawer {
 }
 
 .pagination {
+  // Seven items are wider than a phone: without this the whole page is.
+  flex-wrap: wrap;
+
   .page-item {
     .page-link {
       color: var(--global-text-color);
@@ -4422,7 +4070,7 @@ nav[data-toggle="toc"] {
 
 .medium-zoom-overlay,
 .medium-zoom-image--opened {
-  // Above the navbar (1030), the docked prompt card (1020) and every other fixed layer.
+  // Above the navbar (1030) and every other fixed layer.
   z-index: 1090;
 }
 
@@ -4766,6 +4414,11 @@ $research-map-palettes: (
 .research-map-shell {
   @include research-map-tokens(light);
 
+  // The map is drawn on the cards' paper, not the page's: everything in it that speaks of "the
+  // paper" (the frame's fill, the stations' cores, the arrows' fades, the sort menu, the color the
+  // receding lines are mixed toward) follows from this one line.
+  --global-bg-color: var(--global-card-bg-color);
+
   position: relative;
   width: 100%;
   max-width: 100%;
@@ -4777,10 +4430,29 @@ $research-map-palettes: (
   border: 1px solid var(--rm-frame);
   border-radius: 12px;
   background: var(--global-bg-color);
+
+  // The strip that closes the frame (.research-map-strip below): its height, that plus its
+  // top hairline, and its side padding.
+  --rm-strip-height: 32px;
+  --rm-strip-outer: 33px;
+  --rm-strip-pad: 14px;
+  // Touch screens keep the text filter at 16px (iOS zooms the page for a smaller field) and
+  // draw it at the strip's size: 13 / 16.
+  --rm-field-scale: 0.8125;
+  // While the list is narrowed, the rest of the map recedes (.is-focused below): how much of
+  // its color a line keeps, and how far names and bracket tags step back.
+  --rm-fade: 30%;
+  --rm-fade-text: 0.34;
+  --rm-fade-tag: 0.2;
 }
 
 html[data-theme="dark"] .research-map-shell {
   @include research-map-tokens(dark);
+
+  // On the dark paper the same step back needs a little more left.
+  --rm-fade: 38%;
+  --rm-fade-text: 0.44;
+  --rm-fade-tag: 0.27;
 }
 
 .research-map {
@@ -4794,8 +4466,7 @@ html[data-theme="dark"] .research-map-shell {
   scrollbar-width: none;
   cursor: default;
   border: 0;
-  border-radius: 11px;
-  padding-bottom: 0.25rem;
+  border-radius: 11px 11px 0 0;
   background: transparent;
 
   &.is-pannable {
@@ -4817,7 +4488,11 @@ html[data-theme="dark"] .research-map-shell {
     width: max(calc(100% * 1125 / 1005), calc(900px * 1125 / 1005));
     max-width: none;
     height: auto;
-    aspect-ratio: 1125 / 308;
+    // 228px tall at the 900 / 1005 px per unit this width gives: the highest name starts about
+    // 11px under the frame's top and the lowest labels end about 11px above the strip. The map
+    // has no title of its own: the navbar names the open panel and the card's hint calls it the
+    // research roadmap.
+    aspect-ratio: 1125 / 254.75;
     flex-shrink: 0;
     -webkit-user-drag: none;
   }
@@ -4831,40 +4506,27 @@ html[data-theme="dark"] .research-map-shell {
 @if map.has-key(map.get($research-map-palettes, $research-map-palette, light), grid) {
   .research-map {
     background-image: radial-gradient(var(--rm-grid) 1px, transparent 1.2px);
-    background-position: 9px 9px;
+    // Thirteen rows, 18px apart, centred in the map's 228px: 6px from either edge.
+    background-position: 9px -3px;
     background-size: 18px 18px;
     background-attachment: local;
   }
 }
 
-// Lives on the shell rather than in the SVG so it stays put while the map scrolls.
-.research-map-title {
-  position: absolute;
-  top: 0.55rem;
-  left: 0.85rem;
-  z-index: 3;
-  color: var(--rm-title);
-  font-family: "Hiragino Mincho ProN", "Yu Mincho", Georgia, serif;
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  line-height: 1.2;
-  pointer-events: none;
-  user-select: none;
-}
-
 // Replaces the native scrollbar, drawn like a stretch of the map itself: a hairline track with a
 // hollow terminus at each end, and the thumb a short, thicker run of line riding on it.
 // research.js positions the thumb (it travels the full width of this box, between the termini).
+// It rides the strip's top hairline: that line is its track.
 .research-map-rail {
   position: absolute;
   left: 50%;
-  bottom: 0.45rem;
-  z-index: 2;
+  bottom: calc(var(--rm-strip-height) - 2px);
+  z-index: 5;
   width: clamp(6rem, 18%, 9rem);
-  // Taller than what is drawn, so it is easy to grab.
-  height: 14px;
-  background: linear-gradient(var(--rm-rail-line), var(--rm-rail-line)) center / 100% 1px no-repeat;
+  // Taller than what is drawn, so it is easy to grab: the 10px of free margin above the line
+  // (the map's lowest labels end there) and 2px below it, short of the strip's words.
+  height: 13px;
+  background: linear-gradient(var(--rm-rail-line), var(--rm-rail-line)) 0 10px / 100% 1px no-repeat;
   cursor: pointer;
   opacity: 0;
   pointer-events: none;
@@ -4878,7 +4540,7 @@ html[data-theme="dark"] .research-map-shell {
   &::after {
     content: "";
     position: absolute;
-    top: 50%;
+    top: 10.5px;
     width: 7px;
     height: 7px;
     margin-top: -3.5px;
@@ -4909,7 +4571,7 @@ html[data-theme="dark"] .research-map-shell {
 
 .research-map-rail-thumb {
   position: absolute;
-  top: 50%;
+  top: 10.5px;
   left: 0;
   width: 1.5rem;
   height: 4px;
@@ -4937,7 +4599,7 @@ html[data-theme="dark"] .research-map-shell {
 .research-map-scroll {
   position: absolute;
   top: 0;
-  bottom: 0;
+  bottom: var(--rm-strip-outer);
   z-index: 2;
   display: none;
   align-items: center;
@@ -4965,7 +4627,7 @@ html[data-theme="dark"] .research-map-shell {
   left: 0;
   justify-content: flex-start;
   padding-left: 0.58rem;
-  border-radius: 11px 0 0 11px;
+  border-radius: 11px 0 0 0;
   background: linear-gradient(90deg, var(--global-bg-color) 30%, transparent);
 }
 
@@ -4973,8 +4635,972 @@ html[data-theme="dark"] .research-map-shell {
   right: 0;
   justify-content: flex-end;
   padding-right: 0.58rem;
-  border-radius: 0 11px 11px 0;
+  border-radius: 0 11px 0 0;
   background: linear-gradient(270deg, var(--global-bg-color) 30%, transparent);
+}
+
+// ---- The strip: the bottom edge of the map frame ------------------------------------------------
+// The hinge between the map and the paper list (_includes/research_controls.liquid, driven by
+// research.js). Its top hairline carries the scroll rail. Left, the scope: what the list is
+// showing, set like a map label (the interchange ring for every line, a line's dot for one line);
+// Filter's text is typed straight into that readout. Right, the tools: Reset (only while there is
+// something to reset), Filter, Sort. All of them are words, not boxes, and the theme color is
+// feedback only: hover, focus, on.
+.research-map-strip {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  box-sizing: content-box;
+  height: var(--rm-strip-height);
+  padding: 0 var(--rm-strip-pad);
+  border-top: 1px solid var(--rm-frame);
+  color: var(--global-text-color);
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", Georgia, serif;
+  font-size: 13px;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+
+  button {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: 1.5px solid var(--global-theme-color);
+      outline-offset: -4px;
+      border-radius: 7px;
+    }
+  }
+
+  svg {
+    display: block;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+
+// The site gives every span and div the text color outright (top of this file); in the strip
+// they follow what they sit in (a count, a button in its hover color). :where() keeps this as
+// weak as that rule, so every class below still wins.
+:where(.research-map-strip) span,
+:where(.research-map-strip) div {
+  color: inherit;
+}
+
+// Left: now showing.
+.rm-strip-now {
+  display: flex;
+  align-items: center;
+  flex: 0 1 auto;
+  min-width: 0;
+  position: relative;
+  height: 100%;
+  margin-right: auto;
+  cursor: text;
+  transition:
+    opacity 0.2s ease,
+    flex-grow 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+// While it has the caret, the field reaches across to the tools, with the x at its far end. Left
+// with a query, the readout is a statement again, as wide as its words.
+.research-map-strip.is-searching .rm-strip-now:focus-within {
+  flex-grow: 1;
+  padding-right: 6px;
+
+  .rm-strip-quote {
+    display: none;
+  }
+
+  .rm-strip-field {
+    flex-grow: 1;
+  }
+}
+
+// In the field the count comes first, before the words ("12 papers · video"), and keeps its width
+// as it changes, so that the words never move while they are typed.
+.research-map-strip.is-searching {
+  .rm-strip-glyph {
+    order: -2;
+  }
+
+  .rm-strip-count {
+    order: -1;
+    margin: 0 0.42em 0 0;
+
+    &::before {
+      content: none;
+    }
+
+    &::after {
+      content: "·";
+      margin-left: 0.36em;
+    }
+  }
+
+  .rm-strip-num {
+    display: inline-block;
+    min-width: 2ch;
+    text-align: right;
+  }
+}
+
+// The field's only chrome: a hairline under it, from the words to the x, while it has the caret.
+.research-map-strip.is-searching .rm-strip-field::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: calc(50% - 0.86em);
+  left: 0;
+  height: 1px;
+  background: var(--global-theme-color);
+  opacity: 0;
+  transform: scaleX(0.4);
+  transform-origin: left center;
+  transition:
+    opacity 0.2s ease,
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.research-map-strip.is-searching .rm-strip-now:focus-within .rm-strip-field::after {
+  opacity: 0.7;
+  transform: scaleX(1);
+}
+
+// With the x shown, the line runs on under it, to the end of its stroke: past the gap (5px) and
+// 16 of its 22px.
+.research-map-strip.is-searching .rm-strip-now:has(.rm-strip-clear:not([hidden])) .rm-strip-field::after {
+  right: -21px;
+}
+
+// A line name under the pointer on the map previews here before it is chosen: the readout steps
+// back as a whole, with the count in the name's ink so that it stays legible at that strength.
+.research-map-strip.is-peek .rm-strip-now {
+  opacity: 0.64;
+}
+
+.research-map-strip.is-peek .rm-strip-count {
+  color: var(--global-text-color);
+}
+
+// One slot, two glyphs, both from the map: the interchange ring (every line; a text filter
+// searches every line too) and a line's dot.
+.rm-strip-glyph {
+  position: relative;
+  flex: none;
+  width: 14px;
+  height: 14px;
+  margin-right: 6px;
+}
+
+.rm-strip-ring,
+.rm-strip-dot {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  box-sizing: border-box;
+  border-radius: 50%;
+  opacity: 0;
+  transform: translateY(-50%) scale(0.6);
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease,
+    background-color 0.22s ease;
+}
+
+.rm-strip-ring {
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--global-text-color);
+}
+
+.rm-strip-dot {
+  left: 0.5px;
+  width: 9px;
+  height: 9px;
+  background: var(--rm-strip-dot, var(--global-text-color-light));
+}
+
+.research-map-strip:not(.is-line) .rm-strip-ring,
+.research-map-strip.is-line .rm-strip-dot {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
+// With one line chosen, a short run of that line comes in from the frame's left edge and ends
+// in its dot (dashed for the dashed line; none for "Others", which is not a line).
+.research-map-strip::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 19px; // to the middle of the dot
+  height: 3px;
+  margin-top: -1.5px;
+  background: var(--rm-strip-dot, transparent);
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition:
+    opacity 0.22s ease,
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.research-map-strip.has-run::before {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.research-map-strip.is-dashed::before {
+  background: repeating-linear-gradient(90deg, var(--rm-strip-dot) 0 4px, transparent 4px 7px);
+}
+
+// A previewed line's run steps back with the rest of the preview.
+.research-map-strip.has-run.is-peek::before {
+  opacity: 0.64;
+}
+
+.rm-strip-name {
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rm-strip-count {
+  flex: none;
+  margin-left: 0.42em;
+  color: var(--global-text-color-light);
+  font-variant-numeric: lining-nums tabular-nums;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+
+  &::before {
+    content: "·";
+    margin-right: 0.36em;
+  }
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+// The text filter is typed straight into the readout.
+.rm-strip-field {
+  position: relative;
+  display: none;
+  align-items: center;
+  min-width: 0;
+  height: 100%;
+  margin: 0;
+  font-weight: 600;
+  cursor: text;
+}
+
+.research-map-strip.is-searching .rm-strip-field {
+  display: flex;
+}
+
+.research-map-strip.is-searching .rm-strip-name {
+  display: none;
+}
+
+.rm-strip-quote {
+  flex: none;
+  color: var(--global-text-color-light);
+  font-weight: 400;
+}
+
+.rm-strip-field:not(.has-query) .rm-strip-quote {
+  display: none;
+}
+
+// Grows with what is typed: a hidden copy of the text (data-value, kept by research.js) sizes
+// the box, and the field fills it.
+.rm-strip-grow {
+  position: relative;
+  display: inline-grid;
+  align-items: center;
+  min-width: 0;
+  height: 100%;
+
+  &::before {
+    content: attr(data-value);
+    grid-area: 1 / 1;
+    visibility: hidden;
+    padding-right: 1px;
+    overflow: hidden;
+    white-space: pre;
+  }
+}
+
+.research-map-strip .bibsearch-form-input {
+  position: absolute;
+  inset: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  outline: none;
+  background: transparent;
+  box-shadow: none;
+  color: var(--global-text-color);
+  caret-color: var(--global-theme-color);
+  font: inherit;
+  letter-spacing: inherit;
+
+  &::placeholder {
+    color: var(--global-text-color-light);
+    font-weight: 400;
+    opacity: 1;
+  }
+}
+
+// iOS zooms the page when a field under 16px takes the focus. On touch screens the field
+// therefore stays 16px and is drawn at the strip's size; the hidden copy of the text, at the
+// strip's size, still gives it its width.
+@media (max-width: 699.98px), (hover: none) and (pointer: coarse) {
+  .research-map-strip .bibsearch-form-input {
+    inset: 0 auto 0 0;
+    width: calc(100% / var(--rm-field-scale));
+    font-size: 16px;
+    letter-spacing: 0.01em;
+    transform: scale(var(--rm-field-scale));
+    transform-origin: left center;
+  }
+}
+
+// The x that goes back to all selected papers (or empties the text filter).
+.research-map-strip .rm-strip-clear {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  margin-left: 5px;
+  border-radius: 50%;
+  color: var(--global-text-color-light);
+  transition: color 0.2s ease;
+
+  &[hidden] {
+    display: none;
+  }
+
+  // A bigger target than what is drawn.
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -5px -4px;
+  }
+
+  svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--global-theme-color);
+  }
+}
+
+// Filter, Reset, Sort.
+.research-map-strip .rm-strip-tool {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  gap: 6px;
+  height: 100%;
+  padding: 0 9px;
+  color: var(--global-text-color);
+  font-weight: 600;
+  white-space: nowrap;
+  transition:
+    color 0.2s ease,
+    opacity 0.25s ease,
+    visibility 0.25s;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    color: var(--global-icon-color, var(--global-text-color-light));
+    transition: color 0.2s ease;
+  }
+
+  > span {
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.28em;
+    transition: text-decoration-color 0.2s ease;
+  }
+
+  // Hover answers the way the map's own labels do: an underline, in the feedback color.
+  @media (hover: hover) {
+    &:hover {
+      color: var(--global-theme-color);
+
+      svg {
+        color: currentColor;
+      }
+
+      > span {
+        text-decoration-color: currentColor;
+      }
+    }
+  }
+
+  &.is-on,
+  &[aria-expanded="true"] {
+    color: var(--global-theme-color);
+
+    svg {
+      color: currentColor;
+    }
+  }
+}
+
+// Reset comes last, and only while something differs from the start: it opens out of the strip's
+// end and Filter and Sort make room for it. Its margin lets the last word, whichever it is, end on
+// the strip's side padding. (.is-on only marks it present, not lit.)
+.research-map-strip .rm-strip-reset {
+  max-width: 7em;
+  margin-right: -9px;
+  overflow: hidden;
+  transition:
+    color 0.2s ease,
+    opacity 0.25s ease,
+    visibility 0.25s,
+    max-width 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    padding 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+
+  &:not(.is-on) {
+    max-width: 0;
+    padding-right: 0;
+    padding-left: 0;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  &.is-on {
+    color: var(--global-text-color);
+
+    svg {
+      color: var(--global-icon-color, var(--global-text-color-light));
+    }
+  }
+
+  @media (hover: hover) {
+    &.is-on:hover {
+      color: var(--global-theme-color);
+
+      svg {
+        color: currentColor;
+      }
+    }
+  }
+}
+
+// The sort menu: a short line with one stop per order. It hangs under the frame's right corner, or
+// under Sort while Reset is shown after it (research.js moves it).
+.rm-strip-menu {
+  position: absolute;
+  top: 100%;
+  right: -1px;
+  z-index: 20;
+  box-sizing: border-box;
+  min-width: 168px;
+  margin-top: 7px;
+  padding: 6px 0;
+  border: 1px solid color-mix(in srgb, var(--global-text-color) 16%, transparent);
+  border-radius: 10px;
+  background: var(--global-bg-color);
+  box-shadow:
+    0 10px 28px rgba(28, 36, 51, 0.1),
+    0 2px 6px rgba(28, 36, 51, 0.05);
+
+  html[data-theme="dark"] & {
+    box-shadow:
+      0 12px 30px rgba(0, 0, 0, 0.42),
+      0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+
+  &[hidden] {
+    display: none;
+  }
+
+  // Too little room under the frame (no match, a short list: the homepage panel clips what
+  // hangs out of it), so it opens over the map instead. research.js decides.
+  &.opens-up {
+    top: auto;
+    bottom: 100%;
+    margin: 0 0 7px;
+  }
+
+  // Only a window too short to hold it makes it scroll: research.js caps its height then and
+  // marks it .is-capped. No scrollbar, like the map: the cut row and the line running on say
+  // that there is more.
+  &.is-capped {
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
+.research-map-strip .rm-strip-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 30px;
+  padding: 0 18px 0 35px;
+  color: color-mix(in srgb, var(--global-text-color) 86%, var(--global-text-color-light));
+  text-align: left;
+  white-space: nowrap;
+  transition: color 0.18s ease;
+
+  // The stop.
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    z-index: 1;
+    width: 7px;
+    height: 7px;
+    box-sizing: border-box;
+    border: 1.5px solid color-mix(in srgb, var(--rm-accent) 75%, var(--global-bg-color));
+    border-radius: 50%;
+    background: var(--global-bg-color);
+    transform: translateY(-50%);
+    transition:
+      border-color 0.18s ease,
+      background-color 0.18s ease,
+      transform 0.18s ease;
+  }
+
+  &:hover,
+  &:focus-visible {
+    outline: none;
+    color: var(--global-theme-color);
+
+    &::before {
+      border-color: var(--global-theme-color);
+    }
+  }
+
+  &[aria-selected="true"] {
+    color: var(--global-theme-color);
+    font-weight: 700;
+
+    &::before {
+      border-color: var(--global-theme-color);
+      background: var(--global-theme-color);
+      transform: translateY(-50%) scale(1.3);
+    }
+  }
+}
+
+// The line the stops sit on: each stop draws the stretch back to the stop before it, under the
+// stops themselves (so the line stays whole when the menu scrolls).
+.research-map-strip .rm-strip-option + .rm-strip-option::after {
+  content: "";
+  position: absolute;
+  bottom: 50%;
+  left: 17px;
+  width: 1px;
+  height: 100%;
+  background: color-mix(in srgb, var(--rm-accent) 50%, transparent);
+  // It lies over the lower half of the row before: a press there is that row's.
+  pointer-events: none;
+}
+
+// While the sort menu is open the back-to-top button steps aside, so that it is neither drawn
+// across the menu's rows nor pressed in their place. (From 1040px up the button, 30 + 40px from
+// the window's edge, is clear of the 900px column and so of the menu.)
+@media (max-width: 1039.98px) {
+  html:has(.about-inline-panel.is-visible .rm-strip-menu:not([hidden])) #back-to-top {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+// And the map's rail, whose hit box reaches 10px over the frame's edge, leaves a menu that
+// opens upward its lowest row.
+.research-map-shell:has(.rm-strip-menu.opens-up:not([hidden])) .research-map.is-pannable ~ .research-map-rail {
+  pointer-events: none;
+}
+
+// What the strip tells screen readers when the list changes.
+.rm-strip-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+// Phone, and any frame too narrow for the words beside a long line name: the same strip, with
+// Reset, Filter and Sort as glyphs.
+@media (max-width: 699.98px) {
+  .research-map-shell {
+    --rm-strip-height: 36px;
+    --rm-strip-outer: 37px;
+    --rm-strip-pad: 12px;
+    --rm-field-scale: 0.78125; // 12.5 / 16
+  }
+
+  .research-map-strip {
+    font-size: 12.5px;
+
+    &::before {
+      width: 17px;
+    }
+  }
+
+  .research-map-strip .rm-strip-tool {
+    justify-content: center;
+    width: 34px;
+    padding: 0;
+
+    svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    // Still there for screen readers.
+    > span {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
+
+  // "6", not "6 papers": the room goes to the line's name.
+  .rm-strip-unit {
+    display: none;
+  }
+
+  // Reset does what the x would here.
+  .research-map-strip .rm-strip-clear {
+    display: none;
+  }
+
+  .research-map-strip.is-searching .rm-strip-now:has(.rm-strip-clear:not([hidden])) .rm-strip-field::after {
+    right: 0;
+  }
+
+  .rm-strip-menu {
+    min-width: 176px;
+  }
+
+  .research-map-strip .rm-strip-option {
+    height: 36px;
+  }
+}
+
+// ---- Several teasers on a paper card ------------------------------------------------------------
+// One figure at a time, as in the gallery's posts (_layouts/bib.liquid, assets/js/pub_teasers.js).
+// The first figure sets the height and the others are fitted into it, on the same white. The
+// dots sit on the figure's foot and the arrows show on hover.
+.pub-teasers {
+  position: relative;
+}
+
+.pub-teasers-track {
+  display: flex;
+  overflow-x: auto;
+  // Otherwise overflow-y computes to auto too and the track holds on to the mouse wheel.
+  overflow-y: hidden;
+  overflow-anchor: none;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.pub-teasers-slide {
+  display: flex;
+  flex: 0 0 100%;
+  align-items: center;
+  justify-content: center;
+  // Exactly one track wide: the script reads the figure off scrollLeft / width.
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  scroll-snap-align: start;
+
+  figure,
+  picture {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+  }
+}
+
+// Over the figure's foot, as in the gallery.
+.pub-teasers-dots {
+  position: absolute;
+  bottom: 0.35rem;
+  left: 50%;
+  display: flex;
+  transform: translateX(-50%);
+}
+
+.pub-teasers-dot {
+  display: grid;
+  place-items: center;
+  // A bigger target than what is drawn.
+  width: 18px;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  // The gallery's dots: white, ringed so that they show on any figure.
+  &::before {
+    content: "";
+    box-sizing: border-box;
+    width: 0.4rem;
+    height: 0.4rem;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.78);
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.18),
+      0 1px 4px rgba(0, 0, 0, 0.35);
+    transition:
+      background-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  &.is-active::before {
+    border-color: #fff;
+    background: var(--global-theme-color);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.95),
+      0 0 0 3px color-mix(in srgb, var(--global-theme-color) 28%, transparent),
+      0 1px 5px rgba(0, 0, 0, 0.4);
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 1.5px solid var(--global-theme-color);
+    outline-offset: -2px;
+    border-radius: 5px;
+  }
+}
+
+.pub-teasers-nav {
+  position: absolute;
+  top: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+  color: #262626;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-50%);
+  transition: opacity 0.18s ease;
+
+  &.pub-teasers-prev {
+    left: 0.5rem;
+  }
+
+  &.pub-teasers-next {
+    right: 0.5rem;
+  }
+
+  &.is-off {
+    visibility: hidden;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    opacity: 1;
+    pointer-events: auto;
+    outline: 1.5px solid var(--global-theme-color);
+    outline-offset: 2px;
+  }
+}
+
+@media (hover: hover) {
+  .pub-teasers:hover .pub-teasers-nav {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pub-teasers-dot::before,
+  .pub-teasers-nav {
+    transition: none;
+  }
+}
+
+// ---- The map answers ------------------------------------------------------------------------------
+// While the list is narrowed (a line, a text filter), what it shows stays vivid on the map and the
+// rest recedes: research.js marks the svg .is-focused and what stays .is-kept. Colors are mixed
+// toward the paper rather than made see-through, so crossings and station rings stay clean.
+.research-map svg {
+  --rm-c: var(--global-text-color);
+
+  path,
+  circle,
+  text {
+    transition:
+      stroke 0.4s ease,
+      fill 0.4s ease,
+      opacity 0.4s ease;
+  }
+
+  .rm-dot {
+    transition:
+      transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+      filter 0.28s ease,
+      fill 0.4s ease;
+  }
+}
+
+.research-map svg.is-focused {
+  > :not(.is-kept) {
+    --rm-mix: var(--rm-fade);
+    --rm-t: var(--rm-fade-text);
+    --rm-t2: var(--rm-fade-tag);
+  }
+
+  // Receded is not switched off: under the pointer or the keyboard focus it comes back in full.
+  > .rm-topic:not(.is-kept):hover,
+  > .rm-topic:not(.is-kept):focus-visible,
+  > .rm-station:not(.is-kept):hover,
+  > .rm-station:not(.is-kept):focus-visible {
+    --rm-mix: 100%;
+    --rm-t: 1;
+    --rm-t2: 0.55;
+  }
+
+  // Lines.
+  > path:not(.is-kept) {
+    stroke: color-mix(in srgb, var(--rm-c) var(--rm-mix), var(--global-bg-color));
+  }
+
+  // The hub and the "?" terminus.
+  > circle:not(.rm-bg):not(.is-kept) {
+    fill: color-mix(in srgb, var(--rm-c) var(--rm-mix), var(--global-bg-color));
+  }
+
+  > text:not(.is-kept) {
+    opacity: var(--rm-t);
+  }
+
+  // Line names.
+  > .rm-topic:not(.is-kept) .rm-dot {
+    fill: color-mix(in srgb, var(--rm-c) var(--rm-mix), var(--global-bg-color));
+  }
+
+  > .rm-topic:not(.is-kept):not(:hover):not(:focus-visible) .rm-dot {
+    filter: none;
+    animation: none;
+  }
+
+  > .rm-topic:not(.is-kept) text {
+    opacity: var(--rm-t);
+  }
+
+  // Stations.
+  > .rm-station:not(.is-kept) > circle:not(.rm-bg),
+  > .rm-station:not(.is-kept) > path {
+    fill: color-mix(in srgb, var(--rm-c) var(--rm-mix), var(--global-bg-color));
+  }
+
+  > .rm-station:not(.is-kept) .rm-ring circle {
+    stroke: color-mix(in srgb, var(--rm-c) var(--rm-mix), var(--global-bg-color));
+  }
+
+  > .rm-station:not(.is-kept) .rm-name {
+    opacity: var(--rm-t);
+  }
+
+  > .rm-station:not(.is-kept) .rm-venue {
+    opacity: var(--rm-t2);
+  }
+
+  > .rm-station:not(.is-kept) .rm-venue.is-live {
+    opacity: calc(var(--rm-t2) * 1.4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .research-map-strip *,
+  .research-map-strip::before,
+  .research-map-strip *::before,
+  .research-map-strip *::after,
+  .research-map svg path,
+  .research-map svg circle,
+  .research-map svg text {
+    transition: none !important;
+  }
 }
 
 .rm-bg {
@@ -5003,6 +5629,11 @@ html[data-theme="dark"] .research-map-shell {
   font-size: 10px;
   fill: var(--global-text-color);
   opacity: 0.55;
+
+  // While the list is sorted, the tag carries the value it is sorted by (research.js).
+  &.is-live {
+    opacity: 0.86;
+  }
 }
 
 .rm-station {
@@ -5046,12 +5677,15 @@ html[data-theme="dark"] .research-map-shell {
 }
 
 @each $track in $research-map-tracks {
+  // --rm-c: the color a receded line or station is mixed from (.is-focused above).
   .rm-stroke-#{$track} {
+    --rm-c: var(--rm-#{$track});
     stroke: var(--rm-#{$track});
   }
 
   // color too: a topic dot's glow is drop-shadow(currentColor).
   .rm-fill-#{$track} {
+    --rm-c: var(--rm-#{$track});
     fill: var(--rm-#{$track});
     color: var(--rm-#{$track});
   }

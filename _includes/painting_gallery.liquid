@@ -934,7 +934,7 @@
     applyFilter('*');
 
     // Site search (header.liquid) lands here: show the post (switching to #All if the current
-    // tag hides it), scroll it into view below the docked card and flash it once there.
+    // tag hides it), scroll it into view just under the navbar and flash it once there.
     window.revealGalleryPainting = function (id) {
       var target = document.getElementById(id);
       if (!feed || !target || !feed.contains(target)) return;
@@ -999,9 +999,9 @@
     function followRevealTarget(target) {
       stopRevealFollow();
       function offset() {
-        var card = document.querySelector('.about-prompt');
-        var cardBottom = card ? (parseFloat(window.getComputedStyle(card).top) || 60) + card.offsetHeight : 60;
-        return target.getBoundingClientRect().top - cardBottom - 16;
+        var navbar = document.getElementById('navbar');
+        var navbarBottom = navbar ? navbar.getBoundingClientRect().bottom : 60;
+        return target.getBoundingClientRect().top - navbarBottom - 16;
       }
       function glide() {
         window.scrollTo({ top: window.scrollY + offset(), behavior: 'smooth' });

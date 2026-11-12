@@ -1,44 +1,65 @@
-<div class="research-controls">
-  <div class="research-control-buttons" aria-label="Research controls">
-    <div class="research-control-pill research-control-search" data-research-pill="search">
-      <button type="button" class="research-control-button" data-research-control="search" aria-pressed="false" title="Filter publications">
-        <svg width="1em" height="1em" viewBox="0 0 16 16" aria-hidden="true">
-          <path d="M1.5 1.5h13M4 7.5h8M6.5 13.5h3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-        </svg>
-        <span>Filter</span>
-      </button>
-      <div class="research-control-expansion">
-        {% include bib_search.liquid %}
-      </div>
-    </div>
-    <button type="button" class="research-control-button" data-research-control="reset" title="Reset filters">
-      <i class="fa-solid fa-rotate-left" aria-hidden="true"></i>
-      <span>Reset</span>
+{% comment %}
+  The strip that closes the map frame (included from research_map.liquid). Left, the scope:
+  what the paper list is showing, written like a map label; Filter's text is typed straight
+  into that readout, whose line then reaches across to the tools. Right, the tools: Filter, Sort
+  and, only while there is something to reset, Reset. assets/js/research.js drives it; the
+  hidden <select> is what the sorting code listens to.
+{% endcomment %}
+<div class="research-map-strip" role="group" aria-label="Paper list: what it shows, filter and sort">
+  <div class="rm-strip-now" title="Type to filter">
+    <span class="rm-strip-glyph" aria-hidden="true"><span class="rm-strip-ring"></span><span class="rm-strip-dot"></span></span>
+    <span class="rm-strip-name">All selected papers</span>
+    <label class="rm-strip-field">
+      <span class="rm-strip-quote" aria-hidden="true">“</span>
+      <span class="rm-strip-grow">{% include bib_search.liquid %}</span>
+      <span class="rm-strip-quote" aria-hidden="true">”</span>
+    </label>
+    <span class="rm-strip-count" hidden><span class="rm-strip-num"></span><span class="rm-strip-unit"></span></span>
+    <button type="button" class="rm-strip-clear" aria-label="Back to all selected papers" title="Back to all selected papers" hidden>
+      <svg viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/>
+      </svg>
     </button>
-    <div class="research-control-pill research-control-sort" data-research-pill="sort">
-      <button type="button" class="research-control-button" data-research-control="sort" aria-pressed="false" title="Sort publications">
-        <i class="fa-solid fa-arrow-down-wide-short" aria-hidden="true"></i>
-        <span>Sort</span>
-      </button>
-      <div class="research-control-expansion">
-        <select id="pub-sort-by" aria-label="Sort publications" hidden>
-          <option value="default" selected></option>
-          <option value="cites">Citations</option>
-          <option value="year">Year</option>
-          <option value="authorpos">Author position</option>
-          <option value="stars">GitHub stars</option>
-        </select>
-        <button type="button" class="research-sort-toggle" aria-haspopup="listbox" aria-expanded="false" aria-controls="research-sort-menu">
-          <span class="research-sort-current">Citations</span>
-          <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
-        </button>
-      </div>
-    </div>
   </div>
-  <div id="research-sort-menu" class="research-sort-menu" role="listbox" aria-label="Sort publications" hidden>
-    <button type="button" role="option" data-sort-value="cites" aria-selected="false">Citations</button>
-    <button type="button" role="option" data-sort-value="year" aria-selected="false">Year</button>
-    <button type="button" role="option" data-sort-value="authorpos" aria-selected="false">Author position</button>
-    <button type="button" role="option" data-sort-value="stars" aria-selected="false">GitHub stars</button>
+  <button type="button" class="rm-strip-tool rm-strip-filter" aria-pressed="false" title="Filter papers by text">
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+      <path d="M2 3.75h12M4.5 8h7M6.75 12.25h2.5"/>
+    </svg>
+    <span>Filter</span>
+  </button>
+  <button
+    type="button"
+    class="rm-strip-tool rm-strip-sort"
+    aria-haspopup="listbox"
+    aria-expanded="false"
+    aria-controls="research-sort-menu"
+    title="Sort papers"
+  >
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+      <path d="M4 2.75v10.5M1.75 10.9 4 13.25l2.25-2.35M8.5 3.75h6M8.5 8h4.25M8.5 12.25h2.5"/>
+    </svg>
+    <span>Sort</span>
+  </button>
+  <button type="button" class="rm-strip-tool rm-strip-reset" title="Back to all selected papers, pinned first" tabindex="-1" aria-hidden="true">
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+      <path d="M1.4 2.9v3.8h3.8M2.9 10.1a5.6 5.6 0 1 0 1.3-5.9L1.4 6.7"/>
+    </svg>
+    <span>Reset</span>
+  </button>
+  <select id="pub-sort-by" aria-label="Sort papers" hidden>
+    <option value="default" selected>Pinned first</option>
+    <option value="cites">Citations</option>
+    <option value="year">Year</option>
+    <option value="authorpos">Author position</option>
+    <option value="stars">GitHub stars</option>
+  </select>
+  {% comment %} A short line with one stop per order; the first is the order the list starts in. {% endcomment %}
+  <div id="research-sort-menu" class="rm-strip-menu" role="listbox" aria-label="Sort papers by" hidden>
+    <button type="button" class="rm-strip-option" role="option" data-sort-value="default" aria-selected="true">Pinned first</button>
+    <button type="button" class="rm-strip-option" role="option" data-sort-value="cites" aria-selected="false">Citations</button>
+    <button type="button" class="rm-strip-option" role="option" data-sort-value="year" aria-selected="false">Year</button>
+    <button type="button" class="rm-strip-option" role="option" data-sort-value="authorpos" aria-selected="false">Author position</button>
+    <button type="button" class="rm-strip-option" role="option" data-sort-value="stars" aria-selected="false">GitHub stars</button>
   </div>
+  <span class="rm-strip-live" role="status"></span>
 </div>

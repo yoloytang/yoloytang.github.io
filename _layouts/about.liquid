@@ -267,7 +267,11 @@ layout: default
       });
 
       modelPicker.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape') modelPicker.removeAttribute('open');
+        if (event.key !== 'Escape' || !modelPicker.hasAttribute('open')) return;
+        // Escape closes the picker and stops there: it must not go on to close the open panel.
+        event.stopPropagation();
+        modelPicker.removeAttribute('open');
+        modelPicker.querySelector('summary').focus();
       });
     }
 
@@ -322,6 +326,8 @@ layout: default
       });
       actionGroup.addEventListener('keydown', function (event) {
         if (event.key !== 'Escape' || !actionGroup.classList.contains('is-open')) return;
+        // (And stops there, like the mode picker's.)
+        event.stopPropagation();
         setActionTray(false);
         actionMore.focus();
       });
@@ -406,7 +412,7 @@ layout: default
         setActionsCollapsed(true);
         icons = iconsNeeded(rowRoom());
       }
-      // Under the card would be off in the page while the card floats, so a docked card keeps them.
+      // A docked card keeps them inside, so the open panel starts right under the card.
       placeQuickLinks(icons >= 0 ? 'row' : promptBox.classList.contains('is-docked') ? 'card' : 'below');
       if (icons < 0) {
         setActionsCollapsed(false);
@@ -767,11 +773,10 @@ layout: default
           setPromptDocked(true);
           return;
         }
-        // Keep the short hint while gliding back; the bio types out once the card has landed.
-        // The card already has the bio's height on the way down (reservePromptHeight), so the
-        // typing doesn't make it grow, and lift its centered top, after it lands.
+        // Keep the short hint while gliding back; the bio types out once the card has landed,
+        // and the card grows with it line by line, as on the first visit.
         setPromptDocked(false, function () {
-          showPromptText(null, releasePromptHeight);
+          showPromptText(null);
         });
       }
 
@@ -787,46 +792,27 @@ layout: default
         else if (onDone) onDone();
       }
 
-      // Holds the card at the height it will have once the bio is typed out: at home the card
-      // is centered, so every line the typing adds would otherwise lift its top (and shorten
-      // the hangers) by half a line. Measured with the bio shown instead of the panel hint.
-      function reservePromptHeight() {
-        releasePromptHeight();
-        if (isPromptSearching()) return;
-        finishPromptTyping();
-        var hints = ['has-panel-hint'].concat(Object.keys(panelHintClasses).map(function (key) {
-          return panelHintClasses[key];
-        })).filter(function (name) {
-          return promptBox.classList.contains(name);
-        });
-        hints.forEach(function (name) {
-          promptBox.classList.remove(name);
-        });
-        var height = promptBox.offsetHeight;
-        hints.forEach(function (name) {
-          promptBox.classList.add(name);
-        });
-        promptBox.style.minHeight = height + 'px';
-      }
-
-      function releasePromptHeight() {
-        promptBox.style.minHeight = '';
-      }
-
-      // An open panel docks the card at the bottom of the screen.
+      // An open panel docks the card just under the navbar, at the top of the page. It scrolls
+      // away with the page from there (it is not sticky).
       function setPromptDocked(docked, onLanded) {
         if (promptBox.classList.contains('is-docked') === docked) {
           if (onLanded) onLanded();
           return;
         }
-        var from = promptBox.getBoundingClientRect();
-        releasePromptHeight();
+        var rect = promptBox.getBoundingClientRect();
+        // If the card has scrolled away above the screen, glide from just behind the navbar
+        // instead of from wherever it is up there.
+        var from = { left: rect.left, top: Math.max(rect.top, navbarBottom() - rect.height) };
         promptBox.classList.toggle('is-docked', docked);
         aboutRoot.classList.toggle('has-docked-prompt', docked);
         fitQuickLinks();
-        if (!docked) reservePromptHeight();
-        updateDockSpace();
         glidePrompt(from, onLanded, docked ? easeRaise : easeLower);
+      }
+
+      // Where the fixed navbar ends: what scrolls up past this line is hidden behind it.
+      function navbarBottom() {
+        var navbar = document.getElementById('navbar');
+        return navbar ? navbar.getBoundingClientRect().bottom : 0;
       }
 
       // Going up the card is pulled: it sets off fast and slows into the dock. Going down it is
@@ -885,51 +871,6 @@ layout: default
           place(progress);
           window.requestAnimationFrame(frame);
         });
-      }
-
-      // Sized here because the production CSS minifier breaks calc(a + b).
-      function updateDockSpace() {
-        if (!promptBox.classList.contains('is-docked')) {
-          aboutRoot.style.removeProperty('--about-dock-curtain');
-          return;
-        }
-        // From the top of the screen to the card's middle (its sticky offset + half its
-        // height): the opaque card covers the rest within its width.
-        var stickyTop = parseFloat(getComputedStyle(promptBox).top) || 0;
-        aboutRoot.style.setProperty('--about-dock-curtain', Math.ceil(stickyTop + promptBox.offsetHeight / 2) + 'px');
-        alignDockCurtain();
-      }
-
-      // While the card is docked, a curtain covers the screen from the top down to the card's
-      // middle: the page scrolls away under it rather than showing around and above the card.
-      // It draws the page's own background, with the grid lines lined up to the page's,
-      // so the strip looks empty instead of like a panel.
-      var dockCurtain = document.createElement('div');
-      dockCurtain.className = 'about-dock-curtain';
-      dockCurtain.setAttribute('aria-hidden', 'true');
-      aboutRoot.appendChild(dockCurtain);
-      var dockCurtainFrame = null;
-
-      function alignDockCurtain() {
-        dockCurtainFrame = null;
-        if (!promptBox.classList.contains('is-docked')) return;
-        // Like the page's (_nijigen.scss): grid lines every 22px from the top of the page, and
-        // the top-of-page gradient pinned to the page's top.
-        var top = window.scrollY + dockCurtain.getBoundingClientRect().top;
-        var offset = -(((top % 22) + 22) % 22);
-        dockCurtain.style.backgroundPosition = '0 ' + offset + 'px, 0 ' + offset + 'px, 0 ' + -top + 'px';
-      }
-
-      window.addEventListener('scroll', function () {
-        if (dockCurtainFrame === null) dockCurtainFrame = window.requestAnimationFrame(alignDockCurtain);
-      }, { passive: true });
-      window.addEventListener('resize', function () {
-        if (dockCurtainFrame === null) dockCurtainFrame = window.requestAnimationFrame(alignDockCurtain);
-      }, { passive: true });
-
-      // The docked card grows and shrinks as its hint types out and as the screen resizes.
-      if ('ResizeObserver' in window) {
-        new ResizeObserver(updateDockSpace).observe(promptBox);
       }
 
       // An open panel is .is-visible; while it fades out before the card lowers
@@ -1125,7 +1066,7 @@ layout: default
       };
 
       // News results carry the news' opening words (the search index keeps its first 13), which
-      // find its row; it scrolls under the docked card and flashes once the scroll stops.
+      // find its row; it scrolls to just under the navbar and flashes once the scroll stops.
       var newsPanel = document.querySelector('[data-about-panel="news"]');
       function squashText(text) {
         return (text || '')
@@ -1140,8 +1081,7 @@ layout: default
             return needle && squashText(li.textContent).indexOf(needle) !== -1;
           });
           if (!item) return;
-          var cardBottom = (parseFloat(getComputedStyle(promptBox).top) || 60) + promptBox.offsetHeight;
-          window.scrollTo({ top: window.scrollY + item.getBoundingClientRect().top - cardBottom - 16, behavior: 'smooth' });
+          window.scrollTo({ top: window.scrollY + item.getBoundingClientRect().top - navbarBottom() - 16, behavior: 'smooth' });
           var lastY = -1;
           var restTimer = window.setInterval(function () {
             if (window.scrollY !== lastY) {

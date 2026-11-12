@@ -32,10 +32,10 @@ jupyter: false
 Yolo Y. Tang is a final-year Ph.D. candidate at the [University of Rochester](https://www.rochester.edu/) (UR), advised by [Prof. Chenliang Xu](https://www.cs.rochester.edu/~cxu22/index.html), working on <a href="https://github.com/yoloytang/Awesome-LLMs-for-Video-Understanding">LMMs/Agents &times; Video Understanding</a>. She earned her M.S. from UR in 2025 en route to her Ph.D. and received her B.Eng. from [SUSTech](https://www.sustech.edu.cn/en/) in 2023. Yolo has interned at [Amazon](https://www.aboutamazon.com/), [ByteDance](https://www.bytedance.com/en/), and [Tencent](https://www.tencent.com/).
 {: .about-bio-academic}
 
-Yolo is <a href="#about-gallery-panel" data-about-panel-trigger="gallery">drawing</a> for fun. She is also really into J-pop and cosplay. Her preferred names include Yolo (in English), 悠洛 (Yōu·Luo, in Mandarin), and <ruby>悠洛<rt>ゆら</rt></ruby> (yura, in Japanese). Please don't [deadname](https://en.wikipedia.org/wiki/Deadnaming) her :)
+Yolo is <a href="{{ '/?panel=gallery' | relative_url }}" data-about-panel-trigger="gallery">drawing</a> for fun. She is also really into J-pop and cosplay. Her preferred names include Yolo (in English), 悠洛 (Yōu·Luo, in Mandarin), and <ruby>悠洛<rt>ゆら</rt></ruby> (yura, in Japanese). Please don't [deadname](https://en.wikipedia.org/wiki/Deadnaming) her :)
 {: .about-bio-creative}
 
-Swipe left or right to explore the full map and click a node to show related papers.
+Swipe right to explore the full research roadmap and click a node to show related papers.
 {: .about-bio-panel .about-bio-research}
 
 Select a tag to filter: <span class="about-gallery-filters" role="group" aria-label="Filter by tag">{%- assign gallery_tags = '' | split: '' -%}{%- for painting in site.data.paintings -%}{%- if painting.tags -%}{%- assign gallery_tags = gallery_tags | concat: painting.tags -%}{%- endif -%}{%- endfor -%}{%- assign gallery_tags = gallery_tags | uniq | sort -%}{%- assign ordered_tags = '' | split: '' -%}{%- for tag in site.gallery_tag_order -%}{%- if gallery_tags contains tag -%}{%- assign ordered_tags = ordered_tags | push: tag -%}{%- endif -%}{%- endfor -%}{%- for tag in gallery_tags -%}{%- unless ordered_tags contains tag -%}{%- assign ordered_tags = ordered_tags | push: tag -%}{%- endunless -%}{%- endfor -%}<button type="button" class="ig-filter is-active" data-ig-filter="*" aria-selected="true">#All</button>{%- for tag in ordered_tags -%}{%- assign tag_key = tag | downcase %} <button type="button" class="ig-filter" data-ig-filter="{{ tag_key }}" aria-selected="false">#{{ tag }}</button>{%- endfor -%}</span>
@@ -126,11 +126,11 @@ Yolo's latest updates, newest first.
   </div>
   </div>
   <nav class="about-quick-links" aria-label="Quick links">
-    <a href="#about-research-panel" title="Research" data-about-panel-trigger="research" aria-expanded="false" aria-controls="about-research-panel">
+    <a href="{{ '/?panel=research' | relative_url }}" title="Research" data-about-panel-trigger="research" aria-expanded="false" aria-controls="about-research-panel">
       <i class="fa-regular fa-compass" aria-hidden="true"></i>
       <span class="quick-link-title">Research</span>
     </a>
-    <a href="#about-gallery-panel" title="Gallery" data-about-panel-trigger="gallery" aria-expanded="false" aria-controls="about-gallery-panel">
+    <a href="{{ '/?panel=gallery' | relative_url }}" title="Gallery" data-about-panel-trigger="gallery" aria-expanded="false" aria-controls="about-gallery-panel">
       <i class="fa-regular fa-images" aria-hidden="true"></i>
       <span class="quick-link-title">Gallery</span>
     </a>
@@ -176,16 +176,12 @@ Yolo's latest updates, newest first.
 <section id="about-research-panel" class="about-inline-panel about-inline-research research-jp" data-about-panel="research" aria-label="Research" hidden>
   <div class="about-inline-panel-inner">
     {% include research_map.liquid %}
-    {% include research_controls.liquid %}
 
     <div id="research-map-paper-panel" class="research-map-paper-panel" data-pinned-keys="{{ page.pinned_research | join: ',' }}" hidden>
-      <div class="research-paper-status">
-        <p class="research-paper-status-text" role="status"></p>
-        <button type="button" class="research-paper-status-clear" hidden>
-          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-          <span>Clear filter</span>
-        </button>
-      </div>
+      <p class="research-paper-empty" hidden>
+        <span class="research-paper-empty-text"></span>
+        <button type="button" class="research-paper-empty-clear">Clear filter</button>
+      </p>
       {% include selected_papers.liquid %}
     </div>
 

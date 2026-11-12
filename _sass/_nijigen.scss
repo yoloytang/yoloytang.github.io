@@ -229,6 +229,12 @@ html[data-theme="dark"] {
 #back-to-top {
   transition: transform 0.25s $niji-spring;
 
+  // 页面在顶部时按钮只是透明（主题把它固定在右下角，没有移出屏幕），不能再接点击：
+  // 否则会挡住正好落在这个角上的控件（如手机上研究地图底栏的 Filter / Sort）。
+  &.hidden {
+    pointer-events: none;
+  }
+
   &:hover {
     transform: translateY(-4px) scale(1.1);
   }
@@ -907,8 +913,7 @@ ninja-keys {
 // --about-hanger-length（纯 px 值，这里不写 calc(a + b)：生产环境的压缩器会删掉空格把它压坏）。
 // 下面四个 SVG data URL 里的空格一律写成 %20，原因相同：压缩器会把 url() 里的空格也删掉，图就画不出来。
 // 回滚：删掉这一段、那个 JS 文件和 _layouts/about.liquid 里引用它的那行 <script>。面板打开时
-// 文本框离导航栏 24px（_base.scss 里 is-*-panel-open 的 margin-top 和 .is-docked 的 top），
-// 也是给挂件留的位置，可一并改回 -3.25rem / 3.75rem。
+// 文本框离导航栏 24px（_base.scss 里 is-*-panel-open 的 margin-top），也是给挂件留的位置。
 
 $about-binder-body: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='20'%20height='22'%20viewBox='0%200%2020%2022'%3E%3Cpath%20d='M2%2011.5H18L16.3%2019.5Q16%2020.5%2015%2020.5H5Q4%2020.5%203.7%2019.5Z'/%3E%3C/svg%3E");
 $about-binder-wire: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='20'%20height='22'%20viewBox='0%200%2020%2022'%3E%3Cpath%20d='M5.5%2012L8.6%203.2Q10%200.8%2011.4%203.2L14.5%2012'%20fill='none'%20stroke='black'%20stroke-width='1.1'/%3E%3Crect%20x='3'%20y='12.6'%20width='14'%20height='0.8'/%3E%3C/svg%3E");
@@ -1106,6 +1111,50 @@ $niji-quiet-accent: true !default;
     text-decoration: underline !important;
   }
 
+  // News：吉祥物气泡里的新闻和 News 面板里的链接都不是 p / li 的直接子元素，上面的规则够不着，
+  // 所以还留着原来的样子（气泡里悬停是粉蓝渐变文字 + 渐变下划线，面板里是粉字悬停变蓝）。
+  // 这里并到同一套：墨色 + 淡下划线，悬停纯主题色。气泡那条夜间规则带 html[data-theme="dark"]
+  // 前缀，所以悬停也要列一条带前缀的才压得住。
+  .about-hello a:not(.about-news-archive),
+  .about-jp .about-inline-news .about-news-list .about-news-text a:not(.btn) {
+    background-image: none;
+    color: var(--global-link-color);
+    text-decoration: underline;
+    text-decoration-color: var(--global-link-underline);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    transition:
+      color 0.15s ease,
+      text-decoration-color 0.15s ease;
+  }
+
+  .about-hello a:not(.about-news-archive):hover,
+  html[data-theme="dark"] .about-hello a:not(.about-news-archive):hover,
+  .about-jp .about-inline-news .about-news-list .about-news-text a:not(.btn):hover {
+    background-image: none;
+    -webkit-text-fill-color: currentColor;
+    color: var(--global-theme-color);
+    text-decoration: underline;
+  }
+
+  // 气泡里的 "All News" 小胶囊：中性细描边 + 墨色字，悬停时描边和字变主题色（原来是渐变字）。
+  .about-hello .about-news-archive {
+    border-color: color-mix(in srgb, var(--global-text-color) 18%, transparent);
+    color: var(--global-text-color);
+    transition:
+      color 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  .about-hello .about-news-archive:hover,
+  html[data-theme="dark"] .about-hello .about-news-archive:hover {
+    background-image: none;
+    -webkit-text-fill-color: currentColor;
+    border-color: color-mix(in srgb, var(--global-theme-color) 50%, transparent);
+    color: var(--global-theme-color);
+    text-decoration: none;
+  }
+
   // 论文标题：柔一档的墨色，悬停变主题色（标题本身就是链接，所以原来全是粉的）。
   .post article .publications ol.bibliography .title > a,
   .publications ol.bibliography .title > a {
@@ -1121,11 +1170,9 @@ $niji-quiet-accent: true !default;
     color: var(--global-theme-color);
   }
 
-  // 图标：Research / Yo'Log / Gallery 和 Filter / Reset / Sort 的图标平时用次要灰，
-  // 悬停、聚焦、选中时再变主题色。
-  .about-jp .about-quick-links i,
-  .about-jp .research-control-button i,
-  .about-jp .research-control-button svg {
+  // 图标：Research / Yo'Log / Gallery 的图标平时用次要灰，悬停、聚焦、选中时再变主题色。
+  // （地图底部那条里的 Filter / Reset / Sort 图标在 _base.scss 的 .rm-strip-tool 里同样处理。）
+  .about-jp .about-quick-links i {
     color: var(--global-icon-color);
     transition: color 0.2s ease;
   }
@@ -1133,15 +1180,7 @@ $niji-quiet-accent: true !default;
   .about-jp .about-quick-links a:hover i,
   .about-jp .about-quick-links a:focus-visible i,
   .about-jp .about-quick-links a.is-active i,
-  .about-jp .about-quick-links a[aria-expanded="true"] i,
-  .about-jp .research-control-button:hover i,
-  .about-jp .research-control-button:hover svg,
-  .about-jp .research-control-button:focus-visible i,
-  .about-jp .research-control-button:focus-visible svg,
-  .about-jp .research-control-button.active i,
-  .about-jp .research-control-button.active svg,
-  .about-jp .research-control-pill:hover .research-control-button i,
-  .about-jp .research-control-pill:hover .research-control-button svg {
+  .about-jp .about-quick-links a[aria-expanded="true"] i {
     color: var(--global-theme-color);
   }
 

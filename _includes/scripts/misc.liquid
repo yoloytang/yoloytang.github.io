@@ -40,6 +40,7 @@
 {% endunless %}
 {% unless page.common_js == false %}
   <script defer src="{{ '/assets/js/common.js' | relative_url | bust_file_cache }}"></script>
+  <script defer src="{{ '/assets/js/pub_teasers.js' | relative_url | bust_file_cache }}"></script>
 {% endunless %}
 {% unless page.copy_code == false %}
   <script defer src="{{ '/assets/js/copy_code.js' | relative_url | bust_file_cache }}" type="text/javascript"></script>

@@ -67,6 +67,7 @@
         {% endif %}
       {% endif %}
       {% if entry.preview %}
+        {% assign previews = entry.preview | split: ',' %}
         {% if entry.preview contains '://' %}
           <img
             class="preview"
@@ -76,6 +77,72 @@
             loading="lazy"
             alt="Publication preview"
           >
+        {% elsif previews.size > 1 %}
+          {% comment %}
+            Several teasers (preview={a.png, b.png, c.png}): one figure at a time, as in the
+            gallery's posts, with dots under them and arrows on hover (assets/js/pub_teasers.js).
+          {% endcomment %}
+          <div class="pub-teasers" role="group" aria-roledescription="carousel" aria-label="Figures from the paper">
+            <div class="pub-teasers-track">
+              {% for preview in previews %}
+                {% assign preview_name = preview | strip %}
+                {% assign entry_path = preview_name | prepend: '/assets/img/publication_preview/' %}
+                <div class="pub-teasers-slide" role="group" aria-label="Figure {{ forloop.index }} of {{ previews.size }}">
+                  {%
+                    include figure.liquid
+                    loading="lazy"
+                    path=entry_path
+                    sizes="(max-width: 740px) 100vw, 440px"
+                    class="preview"
+                    zoomable=true
+                    alt=preview_name
+                  %}
+                </div>
+              {% endfor %}
+            </div>
+            <button type="button" class="pub-teasers-nav pub-teasers-prev is-off" aria-label="Previous figure">
+              <svg
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+            </button>
+            <button type="button" class="pub-teasers-nav pub-teasers-next" aria-label="Next figure">
+              <svg
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </button>
+            <div class="pub-teasers-dots">
+              {% for preview in previews %}
+                <button
+                  type="button"
+                  class="pub-teasers-dot{% if forloop.first %} is-active{% endif %}"
+                  aria-label="Figure {{ forloop.index }} of {{ previews.size }}"
+                  {% if forloop.first %}
+                    aria-current="true"
+                  {% endif %}
+                ></button>
+              {% endfor %}
+            </div>
+          </div>
         {% else %}
           {% assign entry_path = entry.preview | prepend: '/assets/img/publication_preview/' %}
           {%

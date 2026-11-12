@@ -1,8 +1,7 @@
 <div class="research-map-shell">
-  <div class="research-map-title">Research Roadmap</div>
   <button type="button" class="research-map-scroll research-map-scroll-left" aria-label="Scroll research map left">‹</button>
   <div class="research-map" id="research-map-trigger">
-    <svg viewBox="-35 -75 1125 308" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Research map organized as subway lines">
+    <svg viewBox="-35 -45 1125 254.75" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Research roadmap, drawn as subway lines">
       <!-- === Lines (back to front) === -->
       <path class="rm-stroke-temporal" d="M100,85 L470,85" stroke-width="6" fill="none" stroke-linecap="round"/>
       <path class="rm-stroke-st" d="M470,85 L830,85" stroke-width="6" fill="none" stroke-linecap="round"/>
@@ -15,9 +14,9 @@
             stroke-width="6" fill="none" stroke-linecap="round"/>
 
       <!-- Hub -->
-      <circle cx="100" cy="85" r="14" fill="var(--global-text-color)"/>
+      <circle class="rm-hub" cx="100" cy="85" r="14" fill="var(--global-text-color)"/>
       <circle cx="100" cy="85" r="9" class="rm-bg"/>
-      <g class="rm-topic rm-hub-topic" data-paper-mode="all-cites" role="button" tabindex="0" aria-label="Show all selected papers">
+      <g class="rm-topic rm-hub-topic" data-paper-mode="all-cites" role="button" tabindex="0" aria-label="Show LMMs/Agents × video understanding papers">
         <text x="40" y="67" class="rm-label" fill="var(--global-text-color)" font-size="22" text-anchor="middle">LMMs/Agents</text>
         <text x="40" y="82" class="rm-label" fill="var(--global-text-color)" font-size="30" text-anchor="middle">×</text>
         <text x="40" y="97" class="rm-label" fill="var(--global-text-color)" font-size="22" text-anchor="middle">Video</text>
@@ -81,6 +80,7 @@
         <circle cx="650" cy="160" r="5" class="rm-bg"/>
         <text x="650" y="182" class="rm-name" text-anchor="middle">Video-LMM</text>
         <text x="650" y="195" class="rm-name" text-anchor="middle">Post-Training</text>
+        <text x="650" y="146" class="rm-venue" text-anchor="middle"></text>
       </a>
 
       <a href="https://ojs.aaai.org/index.php/AAAI/article/view/32785" target="_blank" class="rm-station" data-paper-key="tang2024cardiff" aria-label="Show CaRDiff paper">
@@ -131,6 +131,7 @@
         </g>
         <circle cx="920" cy="85" r="6" class="rm-bg"/>
         <text x="920" y="107" class="rm-name" text-anchor="middle">BVB</text>
+        <text x="920" y="120" class="rm-venue" text-anchor="middle"></text>
       </a>
 
       <path class="rm-stroke-code" d="M934,85 L1045,85" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="6,5"/>
@@ -151,4 +152,5 @@
   </div>
   <button type="button" class="research-map-scroll research-map-scroll-right" aria-label="Scroll research map right">›</button>
   <div class="research-map-rail" aria-hidden="true"><span class="research-map-rail-thumb"></span></div>
+  {% include research_controls.liquid %}
 </div>

@@ -104,6 +104,8 @@
         pairs.forEach(function (p) {
           starMapCache[p.repo] = p.n;
         });
+        // research.js shows these counts on the map while the list is sorted by stars.
+        window.dispatchEvent(new CustomEvent('pubStarMapReady'));
         return starMapCache;
       });
       return starMapPromise;
@@ -185,8 +187,9 @@
       var c = select.value;
       if (c !== 'default' && c !== 'year' && c !== 'cites' && c !== 'authorpos' && c !== 'stars') c = 'default';
       if (c === 'stars') {
+        // The counts may arrive after another order has been chosen.
         ensureStarMap().then(function () {
-          sortList('stars');
+          if (select.value === 'stars') sortList('stars');
         });
       } else {
         sortList(c);
