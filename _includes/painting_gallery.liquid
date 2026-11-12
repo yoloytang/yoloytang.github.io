@@ -3,7 +3,6 @@
 {% assign ig_url = 'https://instagram.com/' | append: ig_account %}
 {% assign ig_x = 'https://x.com/yoloytang_art' %}
 {% assign ig_pixiv = 'https://pixiv.me/yoloytang' %}
-{% assign ig_discord = 'https://discord.gg/' | append: site.discord_invite %}
 {% assign ig_avatar = '' %}
 {% for file in site.static_files %}
   {% assign avatar_path = file.path | downcase %}
@@ -98,39 +97,6 @@
         class="ig-post"
         data-tags="{{ painting_tags }}"
       >
-        <header class="ig-post-header">
-          <button type="button" class="ig-avatar-button" aria-label="Show profile photo">
-            <img
-              class="ig-avatar"
-              src="{{ ig_avatar_small }}"
-              onerror="this.onerror=null;this.src='{{ ig_avatar }}'"
-              alt="{{ ig_handle }}"
-              loading="lazy"
-            >
-          </button>
-          <div class="ig-post-meta">
-            <span class="ig-username-row">
-              <a class="ig-username" href="{{ ig_url }}" target="_blank" rel="noopener noreferrer">{{ ig_handle }}</a>
-              <span class="ig-pronouns">she/her/hers</span>
-            </span>
-            {% if painting.location -%}
-              <span class="ig-location">{{ painting.location }}</span>
-            {%- endif %}
-          </div>
-          {% if painting.pin %}
-            <span class="ig-pinned" title="Pinned" aria-label="Pinned">
-              <svg viewBox="0 0 16 16" width="15" height="15" fill="currentColor">
-                <path d="M4.146.146A.5.5 0 0 1 4.5 0h7a.5.5 0 0 1 .354.854L10.207 2.5l.646 2.583L13.5 7.5a.5.5 0 0 1-.354.854H8.5v5.5L8 15l-.5-.646V8.354H2.854A.5.5 0 0 1 2.5 7.5l2.647-2.417L5.793 2.5 4.146.854A.5.5 0 0 1 4.146.146z"/>
-              </svg>
-            </span>
-          {% endif %}
-          <a class="ig-more" href="{{ ig_url }}" target="_blank" rel="noopener noreferrer" aria-label="Open Instagram">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-              <circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>
-            </svg>
-          </a>
-        </header>
-
         <div class="ig-carousel{% if images.size > 1 %} is-multi{% endif %}">
           <div class="ig-carousel-track">
             {% for img in images %}
@@ -408,16 +374,23 @@
               <i class="fa-brands fa-instagram" aria-hidden="true"></i>
             </a>
             <a class="ig-icon" href="{{ post_pixiv_url }}" target="_blank" rel="noopener noreferrer" aria-label="Pixiv">
-              <svg class="ig-pixiv" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path d="M4.935 0A4.924 4.924 0 0 0 0 4.935v14.13A4.924 4.924 0 0 0 4.935 24h14.13A4.924 4.924 0 0 0 24 19.065V4.935A4.924 4.924 0 0 0 19.065 0zm7.81 4.547c2.181 0 4.058.676 5.399 1.847a6.118 6.118 0 0 1 2.116 4.66c.005 1.854-.88 3.476-2.257 4.563-1.375 1.092-3.225 1.697-5.258 1.697-2.314 0-4.46-.842-4.46-.842v2.718c.397.116 1.048.365.635.779H5.79c-.41-.41.19-.65.644-.779V7.666c-1.053.81-1.593 1.51-1.868 2.031.32 1.02-.284.969-.284.969l-1.09-1.73s3.868-4.39 9.553-4.39zm-.19.971c-1.423-.003-3.184.473-4.27 1.244v8.646c.988.487 2.484.832 4.26.832h.01c1.596 0 2.98-.593 3.93-1.533.952-.948 1.486-2.183 1.492-3.683-.005-1.54-.504-2.864-1.42-3.86-.918-.992-2.274-1.645-4.002-1.646Z"/>
-              </svg>
+              {% include icon_pixiv.liquid class='ig-pixiv' %}
             </a>
           </div>
-          <div class="ig-actions-right">
-            <a class="ig-icon" href="{{ ig_discord }}" target="_blank" rel="noopener noreferrer" aria-label="Discord">
-              <i class="fa-brands fa-discord" aria-hidden="true"></i>
-            </a>
-          </div>
+          {% comment %} The post's own link (/?panel=gallery&painting=<id>), shared or copied. {% endcomment %}
+          <button
+            type="button"
+            class="ig-icon ig-share"
+            data-ig-share="{{ painting_id }}"
+            data-ig-share-title="{{ image_label | escape }}"
+            aria-label="Share a link to this post"
+            title="Share link"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12 3.5v11M7.75 7.5 12 3.25l4.25 4.25M8.5 10.5H6.75A1.75 1.75 0 0 0 5 12.25v6.5c0 .97.78 1.75 1.75 1.75h10.5c.97 0 1.75-.78 1.75-1.75v-6.5c0-.97-.78-1.75-1.75-1.75H15.5" />
+            </svg>
+            <span class="ig-share-done" aria-hidden="true">Link copied</span>
+          </button>
         </div>
 
         {% if painting.likes %}
@@ -761,6 +734,21 @@
         var count = carousel.querySelector('.ig-carousel-count');
         if (!track) return;
         var slides = track.children;
+
+        // The first picture sets the carousel's height and the others are fitted into it (_base.scss).
+        var lead = slides[0] ? slides[0].querySelector('img') : null;
+        function fitToLead() {
+          if (!lead || !lead.naturalWidth || !track.clientWidth) return;
+          var cap = parseFloat(getComputedStyle(lead).maxHeight) || Infinity;
+          var height = Math.min(cap, (track.clientWidth * lead.naturalHeight) / lead.naturalWidth);
+          carousel.style.setProperty('--ig-slide-height', height.toFixed(1) + 'px');
+          carousel.classList.add('is-fitted');
+        }
+        if (lead) {
+          if (lead.complete) fitToLead();
+          else lead.addEventListener('load', fitToLead);
+          if ('ResizeObserver' in window) new ResizeObserver(fitToLead).observe(track);
+        }
 
         var chosen = 0;
         var steering = false;
@@ -1145,6 +1133,59 @@
           itemObserver.observe(observedItems[oi]);
         }
       }
+    }
+
+    // Share: the system's share sheet where there is one, otherwise the link is copied and the
+    // button says so for a moment. The link opens the homepage's gallery on this post.
+    var shareHome = new URL('{{ site.baseurl }}/', window.location.href);
+
+    function copyText(text) {
+      if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+      return new Promise(function (resolve, reject) {
+        var field = document.createElement('textarea');
+        field.value = text;
+        field.setAttribute('readonly', '');
+        field.style.position = 'fixed';
+        field.style.opacity = '0';
+        document.body.appendChild(field);
+        field.select();
+        var done = false;
+        try {
+          done = document.execCommand('copy');
+        } catch (err) {}
+        field.remove();
+        if (done) resolve();
+        else reject(new Error('copy failed'));
+      });
+    }
+
+    var shareButtons = document.querySelectorAll('.ig-share');
+    for (var sb = 0; sb < shareButtons.length; sb++) {
+      shareButtons[sb].addEventListener('click', function () {
+        var button = this;
+        var url = new URL(shareHome.href);
+        url.searchParams.set('panel', 'gallery');
+        url.searchParams.set('painting', button.getAttribute('data-ig-share'));
+        var link = url.href;
+        var title = button.getAttribute('data-ig-share-title') || document.title;
+        function copied() {
+          button.classList.add('is-done');
+          window.clearTimeout(button._shareTimer);
+          button._shareTimer = window.setTimeout(function () {
+            button.classList.remove('is-done');
+          }, 1600);
+        }
+        if (navigator.share) {
+          navigator.share({ title: title, url: link }).catch(function (err) {
+            // Dismissed by the visitor: nothing to do. Refused by the browser: copy instead.
+            if (err && err.name !== 'AbortError') copyText(link).then(copied, function () {});
+          });
+          return;
+        }
+        copyText(link).then(copied, function () {
+          window.prompt('Copy this link:', link);
+        });
+      });
     }
   })();
 </script>

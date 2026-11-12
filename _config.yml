@@ -72,8 +72,8 @@ acm_id: # your dl.acm.org/profile/id
 blogger_url: # your blogger URL
 bluesky_url: # your bluesky URL
 dblp_url: # your DBLP profile url
-discord_id: 1152784980167106662 # discord.com/users/<id>
-discord_invite: bbKG5nn28r # discord.gg/<invite>, used for the Discord links shown on the site
+discord_id: 1152784980167106662 # discord.com/users/<id>, used for the Discord links shown on the site
+discord_invite: bbKG5nn28r # discord.gg/<invite> (not linked anywhere at the moment)
 facebook_id: # your facebook id
 flickr_id: # your flickr id
 github_username: yoloytang # your GitHub user name

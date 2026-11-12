@@ -666,14 +666,9 @@ ul.task-list input[type="checkbox"] {
     order: -1;
   }
 
-  // Creative mode swaps the email for Discord.
-  .about-prompt-action-list .about-prompt-discord,
+  // Creative mode leaves the email out.
   &.is-creative-mode .about-prompt-action-list .about-prompt-email {
     display: none;
-  }
-
-  &.is-creative-mode .about-prompt-action-list .about-prompt-discord {
-    display: inline-flex;
   }
 
   .about-model-select {
@@ -902,8 +897,10 @@ ul.task-list input[type="checkbox"] {
 
     .about-prompt-pixiv-logo {
       display: none;
-      width: 1.08em;
-      height: 1.08em;
+      width: 1.1em;
+      height: 1.1em;
+      // The whole mark, frame and P, 1px to the right within its round button.
+      transform: translateX(1px);
       flex-shrink: 0;
       overflow: visible;
     }
@@ -1080,11 +1077,6 @@ ul.task-list input[type="checkbox"] {
       font-size: 1.08em;
       transform: translateY(-0.0657em);
     }
-  }
-
-  // Discord's glyph is wide and short, so it needs a larger size than the round icons.
-  .about-prompt-discord i {
-    font-size: 1.04em;
   }
 
   .about-prompt-action-plus {
@@ -1991,6 +1983,24 @@ ul.task-list input[type="checkbox"] {
     }
   }
 
+  // The first picture sets the carousel's height (painting_gallery.liquid) and the others are
+  // fitted into it whole, centred: a taller second picture no longer leaves white round the first.
+  .ig-carousel.is-fitted .ig-slide {
+    height: var(--ig-slide-height);
+  }
+
+  .ig-carousel.is-fitted .ig-post-media img {
+    height: var(--ig-slide-height);
+  }
+
+  .ig-carousel.is-fitted .ig-slide + .ig-slide img {
+    object-fit: contain;
+  }
+
+  .ig-carousel.is-fitted .ig-embed {
+    max-height: var(--ig-slide-height);
+  }
+
   .ig-video {
     display: block;
     width: 100%;
@@ -2223,17 +2233,56 @@ ul.task-list input[type="checkbox"] {
       transform: translateX(-0.04em);
     }
 
-    // Discord's glyph is wide and short, so it needs a larger size than the round icons.
-    .fa-discord {
-      font-size: 1.1em;
+    // Share: a line icon, as light as the outline marks beside it.
+    &.ig-share {
+      position: relative;
+      margin: 0;
+      padding: 0;
+      border: 0;
+
+      svg {
+        width: 1.08em;
+        height: 1.08em;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.9;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
     }
 
-    // In Pixiv's blue, as in the profile drawer; a solid square, so a little under the
-    // outline icons' size reads the same.
+    // "Link copied", above the button for a moment after a click.
+    .ig-share-done {
+      position: absolute;
+      bottom: calc(100% + 4px);
+      right: 0;
+      padding: 0.18rem 0.5rem;
+      border-radius: 6px;
+      background: var(--global-text-color);
+      color: var(--global-bg-color);
+      font-size: 0.72rem;
+      font-weight: 600;
+      line-height: 1.35;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(3px);
+      transition:
+        opacity 0.18s ease,
+        transform 0.18s ease;
+    }
+
+    &.is-done .ig-share-done {
+      opacity: 1;
+      transform: none;
+    }
+
+    // The ring mark (icon_pixiv.liquid), as big as Instagram's square.
     .ig-pixiv {
-      width: 1.08em;
-      height: 1.08em;
-      fill: #0096fa;
+      width: 1.1em;
+      height: 1.1em;
+      // The whole mark, frame and P, 1px to the right within its round button.
+      transform: translateX(1px);
     }
 
     &:hover {
@@ -2890,29 +2939,17 @@ html.has-profile-drawer {
       height: 1.25rem;
     }
 
+    // The ring marks: as big as Instagram's square beside them, in the same 1.25rem column.
+    svg.icon-ring {
+      height: 1.1rem;
+    }
+
     small {
       margin-left: auto;
       color: var(--global-text-color-light);
       font-size: 0.8rem;
     }
   }
-}
-
-// Instagram and Discord in their brand colours, like the Pixiv logo beside them
-// (homepage card, profile drawer, gallery posts).
-.about-prompt-action .fa-instagram,
-.profile-drawer-links .fa-instagram,
-.ig-icon .fa-instagram {
-  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.about-prompt-discord .fa-discord,
-.profile-drawer-links .fa-discord,
-.ig-icon .fa-discord {
-  color: #5865f2;
 }
 
 // The visitor map and the copyright (the site has no footer) sit at the bottom of the drawer.
