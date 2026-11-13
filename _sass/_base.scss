@@ -5529,6 +5529,14 @@ html[data-theme="dark"] .research-map-shell {
   }
 }
 
+// Without a pointer to hover with, the arrows stay on, as in the gallery.
+@media (hover: none) {
+  .pub-teasers-nav {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pub-teasers-dot::before,
   .pub-teasers-nav {
