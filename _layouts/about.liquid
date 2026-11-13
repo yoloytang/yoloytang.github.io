@@ -1117,8 +1117,33 @@ layout: default
       }
     }
 
+    // Whether the focus got where it is by a press or by the keyboard. Any key, Escape too, makes
+    // the browser ring what a press focused; closing the panels with Escape lets go of that focus
+    // instead, so the button just pressed is not ringed. Focus that came by the keyboard stays.
+    var lastInput = 'key';
+    var focusByPointer = false;
+    document.addEventListener(
+      'pointerdown',
+      function () {
+        lastInput = 'pointer';
+      },
+      true
+    );
+    document.addEventListener(
+      'keydown',
+      function () {
+        lastInput = 'key';
+      },
+      true
+    );
+    document.addEventListener('focusin', function () {
+      focusByPointer = lastInput === 'pointer';
+    });
+
     window.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape' || !aboutRoot || !aboutRoot.classList.contains('is-inline-panel-open')) return;
+      var focused = document.activeElement;
+      if (focusByPointer && focused && focused !== document.body && focused.blur) focused.blur();
       closeAllInlinePanels();
     });
 

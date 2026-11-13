@@ -98,6 +98,13 @@
         data-tags="{{ painting_tags }}"
       >
         <div class="ig-carousel{% if images.size > 1 %} is-multi{% endif %}">
+          {% if painting.pin %}
+            <span class="ig-pinned" role="img" aria-label="Pinned">
+              <svg viewBox="0 0 16 16" width="11" height="11" fill="currentColor" aria-hidden="true">
+                <path d="M4.146.146A.5.5 0 0 1 4.5 0h7a.5.5 0 0 1 .354.854L10.207 2.5l.646 2.583L13.5 7.5a.5.5 0 0 1-.354.854H8.5v5.5L8 15l-.5-.646V8.354H2.854A.5.5 0 0 1 2.5 7.5l2.647-2.417L5.793 2.5 4.146.854A.5.5 0 0 1 4.146.146z"/>
+              </svg>
+            </span>
+          {% endif %}
           <div class="ig-carousel-track">
             {% for img in images %}
               {% assign yt_id = '' %}
@@ -455,6 +462,7 @@
     </svg>
   </button>
   <img class="ig-lightbox-img" src="" alt="">
+  <div class="ig-lightbox-dots" aria-hidden="true"></div>
 </div>
 
 <script>
@@ -495,6 +503,7 @@
     var lightboxClose = lightbox ? lightbox.querySelector('.ig-lightbox-close') : null;
     var lightboxPrev = lightbox ? lightbox.querySelector('.ig-lightbox-prev') : null;
     var lightboxNext = lightbox ? lightbox.querySelector('.ig-lightbox-next') : null;
+    var lightboxDots = lightbox ? lightbox.querySelector('.ig-lightbox-dots') : null;
     var lightboxItems = [];
     var lightboxIndex = 0;
 
@@ -503,11 +512,31 @@
       var item = lightboxItems[lightboxIndex];
       lightboxImg.src = item.src;
       lightboxImg.alt = item.alt || '';
+      // A paper's figure (pub_teasers.js) sits on white, as it does on its card: some are transparent.
+      lightboxImg.classList.toggle('is-figure', !!item.figure);
       var multi = lightboxItems.length > 1;
       if (lightboxPrev) lightboxPrev.style.display = multi ? '' : 'none';
       if (lightboxNext) lightboxNext.style.display = multi ? '' : 'none';
       if (lightboxPrev) lightboxPrev.style.visibility = lightboxIndex <= 0 ? 'hidden' : 'visible';
       if (lightboxNext) lightboxNext.style.visibility = lightboxIndex >= lightboxItems.length - 1 ? 'hidden' : 'visible';
+      // Which of them this is, as under the posts; a dot pressed goes to its picture.
+      if (lightboxDots) {
+        lightboxDots.hidden = !multi;
+        if (lightboxDots.children.length !== (multi ? lightboxItems.length : 0)) {
+          lightboxDots.textContent = '';
+          for (var d = 0; multi && d < lightboxItems.length; d++) {
+            var dot = document.createElement('button');
+            dot.type = 'button';
+            dot.className = 'ig-lightbox-dot';
+            dot.tabIndex = -1;
+            dot.setAttribute('data-index', d);
+            lightboxDots.appendChild(dot);
+          }
+        }
+        for (var k = 0; k < lightboxDots.children.length; k++) {
+          lightboxDots.children[k].classList.toggle('is-active', k === lightboxIndex);
+        }
+      }
     }
 
     function openLightbox(items, index) {
@@ -519,6 +548,9 @@
       lightbox.setAttribute('aria-hidden', 'false');
       document.body.style.overflow = 'hidden';
     }
+
+    // The paper cards' figures open here too (pub_teasers.js).
+    window.igLightbox = { open: openLightbox };
 
     function closeLightbox() {
       if (!lightbox || !lightboxImg) return;
@@ -572,6 +604,14 @@
         e.stopPropagation();
         stepLightbox(1);
       });
+    if (lightboxDots)
+      lightboxDots.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var dot = e.target.closest('.ig-lightbox-dot');
+        if (!dot) return;
+        lightboxIndex = +dot.getAttribute('data-index');
+        renderLightbox();
+      });
     if (lightboxImg)
       lightboxImg.addEventListener('click', function (e) {
         e.stopPropagation();
@@ -582,12 +622,20 @@
         closeLightbox();
       });
     }
-    window.addEventListener('keydown', function (e) {
-      if (!lightbox || !lightbox.classList.contains('active')) return;
-      if (e.key === 'Escape') closeLightbox();
-      else if (e.key === 'ArrowLeft') stepLightbox(-1);
-      else if (e.key === 'ArrowRight') stepLightbox(1);
-    });
+    // Taken on the way down and kept: the homepage's own Escape (about.liquid) would also close
+    // the panel behind the viewer.
+    document.addEventListener(
+      'keydown',
+      function (e) {
+        if (!lightbox || !lightbox.classList.contains('active')) return;
+        if (e.key === 'Escape') closeLightbox();
+        else if (e.key === 'ArrowLeft') stepLightbox(-1);
+        else if (e.key === 'ArrowRight') stepLightbox(1);
+        else return;
+        e.stopPropagation();
+      },
+      true
+    );
 
     if (lightbox) {
       var touchStartX = 0;
